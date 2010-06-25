@@ -1,0 +1,530 @@
+{% extends "/base/index.html" %}
+{% block title %}Edycja zlecenia{% endblock %}
+	
+{% block include %}
+	{{ h.javascript_link(url('/js/admin/Inline.js'),
+						 url('/js/admin/CollapsedInlineFieldsets.js'),
+						 url('/jquery/jquery.dd.js')
+						 ) }}
+	{{ h.stylesheet_link(url('/css/dd.css')) }}
+			
+{% endblock %}	
+        
+
+{% block content %}
+
+<div id="dialog" title="Usunąć zlecenie?">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Czy na pewno usunąć zlecenie?</p>
+</div>
+
+
+
+<div id="content-main">
+<div id="tabs">
+    <ul>
+        <li><a href="#tabs-1">Zlecenie</a></li>
+        <li><a href="#tabs-2">Miejsca załadunku</a></li>        
+        <li><a href="#tabs-3">Dodatkowe informacje</a></li>
+    </ul>
+	{{ h.form(url(controller='orders', action='edit', id=request.urlvars['id']), method="post", id='order-form') }}
+    <div id="tabs-1">
+    	
+		<fieldset class="module aligned">
+		
+		<fieldset class="module-right aligned" id="transport-order-box">            
+			{{ forms.show_transport_order(c.order, c.transport_form) }}                           
+        </fieldset>
+		    	
+    	<fieldset class="module aligned">
+    		<h2>Zlecenie</h2>
+            <div class="form-row">
+            	<div>
+            		{{ c.form.id(id="order-id") }}
+					{{ forms.render_field(c.form.number) }}										
+            	</div>
+			</div>
+			<div class="form-row">
+            	<div>
+            		{{ c.form.idCompany(id="idCompany") }}
+            		{{ c.form.company.label }}
+					{{ c.form.company(class_="vMediumTextField", id="companyField") }}				
+					
+					<a href="{{ url(controller="companies", action="edit", id=c.order.idCompany) }}" class="goto"></a>
+					
+					{% if c.form.company.errors %}
+				        <ul class="errorlist">
+				        	{% for error in c.form.company.errors %}<li>{{ error }}</li>{% endfor %}
+						</ul>
+				    {% endif %}					
+            	</div>
+			</div>
+			<div class="form-row">
+            	<div>
+            		{{ c.form.freight.label }}
+					{{ c.form.freight() }}					
+					{{ c.form.currency(id="idcurrency") }}
+					
+					{{ forms.with_errors(c.form.freight) }}					
+            	</div>
+			</div>
+			<div id="currencyDate" class="form-row">
+            	<div>
+            		{{ c.form.isCurrencyDate.label }}
+					{{ c.form.isCurrencyDate() }}
+            	</div>
+			</div>
+			<div class="form-row">
+            	<div>
+            		{{ c.form.invoice.label }}					
+					
+					{% if c.order.isFactured == 1 %}
+						{{ h.text("invoiceNumber", id="invoiceNumberField", disabled=true, style="color:green; width: 150px;", value=c.invoice.invoice.number) }}						
+						{{ h.link_to('Pokaż'|string,  url(controller='invoices'|string, action='edit', id=c.invoice.invoice_id ), class_='buttonList show', style="width: 50px;") }}
+                    {% endif %}					
+            	</div>
+			</div>
+			<div class="form-row">
+            	<div>
+            		{{ forms.render_field(c.form.foreignOrder, class_="vMediumTextField") }}            							
+            	</div>
+			</div>	
+			<div class="form-row">
+				{{ h.submit('Zapisz', name='action', value='Save') }}
+				{% if c.order.isFactured != 1 and c.order.places|length > 1 %}                
+	                   {{ h.link_add('Utwórz fakturę', url(controller='invoices', action='add', id=c.order.id)) }}
+	            {% endif %}		
+				{% if c.order.isFactured != 1 %}
+					{{ h.link_delete('Usuń', url(controller='orders', action='delete', id=c.order.id), id="deleteOrder", onclick="return false;") }}				
+	            {% endif %}
+			</div>		
+		</fieldset>	
+		
+		</fieldset>
+		
+		
+		<fieldset class="module aligned" id="place-order-box">					
+			{{ forms.show_places(c.places_form, c.order.places) }}
+		</fieldset>
+		
+		{% if c.order.delegation %}
+			<fieldset class="module aligned" id="delegation-box">
+				{{ forms.show_delegation() }}				
+			</fieldset>
+		{% else %}
+			<fieldset class="module aligned" id="delegation-box">
+				{{ forms.new_delegation() }}		
+			</fieldset>
+		{% endif %}			
+		
+		{% if c.order.currency.value != "PLN" %}
+		
+		<div name="inlinegroup" class="inline-group inline-stacked collapsed collapse-closed">
+    		<h2 class="collapse-toggle">Kurs walut zlecenia</h2>
+			<ul class="inline-item-tools">
+		        <li><a href="javascript://" class="openhandler" title="Open All Items"></a></li>
+		        <li><a href="javascript://" class="closehandler" title="Close All Items"></a></li>
+		        
+		    </ul>
+			<div class="items">
+    		<fieldset class="module aligned">
+                <div class="form-row">
+                    <div>
+                        {{ c.form.currencyValue.label }}
+						{{ c.form.currencyValue(class_="vTextField") }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        {{ c.form.currencyDate.label }}
+						{{ c.form.currencyDate(class_="vTextField") }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        {{ c.form.currencyTableNumber.label }}
+						{{ c.form.currencyTableNumber(class_="vTextField") }}
+                    </div>
+                </div>
+            </fieldset>         
+			</div>
+    	</div>
+		
+		{% endif %}		
+		
+		{% if c.order.transport_order and c.order.transport_order.currency.value != "PLN" %}
+		
+		<div name="inlinegroup" class="inline-group inline-stacked collapsed collapse-closed">
+    		<h2 class="collapse-toggle">Kurs walut zlecenia transportowego</h2>
+			<ul class="inline-item-tools">
+		        <li><a href="javascript://" class="openhandler" title="Open All Items"></a></li>
+		        <li><a href="javascript://" class="closehandler" title="Close All Items"></a></li>
+		        
+		    </ul>
+			<div class="items">
+    		<fieldset class="module aligned ">
+				<div class="form-row">
+                    <div>
+                        {{ c.transport_form.currencyValue.label }}
+						{{ c.transport_form.currencyValue() }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        {{ c.transport_form.currencyDate.label }}
+						{{ c.transport_form.currencyDate() }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        {{ c.transport_form.currencyTableNumber.label }}
+						{{ c.transport_form.currencyTableNumber() }}
+                    </div>
+                </div>
+    		</fieldset>        
+			</div>
+    	</div>
+		
+		{% endif %}			
+				      
+	</div>
+	<div id="tabs-2">            
+        <fieldset class="module aligned" id="new-place-box">
+			{{ forms.new_place(c.place_form) }}                     
+        </fieldset>                   
+	</div>	
+	<div id="tabs-3">
+        <fieldset class="module aligned">
+            <div class="form-row">
+                <div>
+                    <label>Utworzył:</label>
+                    {{ h.text("orderCreator", id="orderCreatorField", disabled=true, class_="vTextField", value=c.order.creator.full_name) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    <label>Data utworzenia:</label>
+                    {{ h.text("orderCreationDate", id="orderCreationDateField", disabled=true, class_="vTextField", value=c.order.created_at) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    <label>Modyfikował:</label>
+                    {{ h.text("orderModifier", id="orderModifierField", disabled=true, class_="vTextField", value=c.order.modifier.full_name) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    <label>Data modyfikacji:</label>
+                    {{ h.text("orderModDate", id="orderModDateField", disabled=true, class_="vTextField", value=c.order.updated_at) }}
+                </div>
+            </div>				
+			<div class="form-row">
+            	<div>
+            		{{ c.form.description.label }}
+					{{ c.form.description(class_="vLargeTextField", rows="5", cols="40") }}
+					
+					{{ forms.with_errors(c.form.description) }}
+					<p class="help">
+						Dodatkowe informacje widoczne do zlecenia (max 320)  
+					</p>					
+            	</div>
+			</div>
+			
+        </fieldset>			            
+	</div>
+	{{ h.end_form() }}
+</div>
+</div>
+{%- endblock %}
+
+{% block footer %}
+<script> 
+	$(function() {	
+		$('#placeDate').live('click', function(){
+			$(this).datepicker({
+				showOn:'focus',
+				dateFormat: 'yy-mm-dd'
+			}).focus();
+		})            		
+		
+        var $tabs = $("#tabs").tabs();
+		//$("select").msDropDown();    
+		
+		$('#driver-select').live('change', function(){
+			var id = $("option:selected", this).val();
+			
+			if (id != '') {
+				$('#delegation-list').show();
+				$('#delegation-list').load('{{ url(controller='orders', action='show_delegations')}}/' + id);
+			} else {
+				$('#delegation-list').hide()
+			}
+		});    
+		
+		/****DELEGACJE*********/
+		$('.append-delegation').live('click', function(){
+			$('#delegation-box').block({ 
+				message: '<h2>Zapisywanie</h2>'				  
+			}); 
+			
+			var id_order = $('#order-id').val();
+			var id_delegation = $(this).parent().parent().find('.id-delegation').val();
+			
+			$.ajax({
+				url: '{{ url(controller="orders", action="append_delegation") }}',
+				type: 'POST',
+				data: {'id_order': id_order, 'id_delegation': id_delegation},
+				success: function(msg){
+					$('#delegation-box').html(msg);
+					$.growlUI('Informacja', 'Delegacja pomyślnie dopięta!');
+				},
+				error: function(msg){
+					$('#delegation-box').html(msg);
+					$.growlUI('Błąd', 'Wystąpił błąd podczas usuwania delegacji!');
+				},
+				complete: function() {
+					$('#delegation-box').unblock();					
+				}
+			})
+			
+			return false;
+		});
+		
+		$('#new-delegation').live('click', function(){
+			$('#delegation-box').block({ 
+				message: '<h2>Zapisywanie</h2>'				  
+			});
+			
+			$('#order-form').ajaxSubmit({
+				data: {action: 'Add Delegation'},				
+				success: function(msg){
+					if ($(msg).find('.errorlist').length == 0)
+					{
+						$.growlUI('Informacja', 'Dodano delegację.');												
+					}	
+					$('#delegation-box').html(msg);					
+				},
+				error: function(msg){
+					$('#delegation-box').html(msg);
+					$.growlUI('Błąd', 'Wystąpił błąd podczas zapisu!');
+				},
+				complete: function(){
+					$('#delegation-box').unblock();		
+				}
+			});
+			return false;
+		});
+		
+		$('#remove-delegation').live('click', function(){
+			$('#delegation-box').block({ 
+				message: '<h2>Zapisywanie</h2>'				  
+			});
+			
+			$.ajax({
+				url: '{{ url(controller="orders", action="remove_delegation", id=c.order.id) }}',
+				type: 'POST',
+				success: function(msg){
+					$('#delegation-box').html(msg);
+					$.growlUI('Informacja', 'Delegacja pomyślnie usunięta!'); 
+				},
+				error: function(msg){
+					$('#delegation-box').html(msg);
+					$.growlUI('Błąd', 'Wystąpił błąd podczas usuwania delegacji!');
+				},
+				complete: function(){
+					$('#delegation-box').unblock();					 
+				}
+			})
+			return false;			
+		});
+        
+		/*****ZLECENIE TRANSPORTOWE************/
+		$('#save-transport-order').live('click', function(){			
+			$('#transport-order-box').block({
+				message: '<h2>Zapisywanie</h2>'
+			});
+			
+			$('#order-form').ajaxSubmit({
+				data: {action: 'Save TO'},				
+				success: function(msg){
+					if ($(msg).find('.errorlist').length == 0)
+					{
+						$.growlUI('Informacja', 'Pomyślnie zapisano zlecenie.');												
+					}	
+					$('#transport-order-box').html(msg);					
+				},
+				error: function(msg){
+					$('#transport-order-box').html(msg);
+					$.growlUI('Błąd', 'Wystąpił błąd podczas zapisu zlecenia!');
+				},
+				complete: function(){
+					$('#transport-order-box').unblock();		
+				}
+			});
+			
+			return false;	
+		});
+		
+		$('#delete-transport-order').live('click', function(){
+			$('#transport-order-box').block({
+				message: '<h2>Zapisywanie</h2>'
+			});
+			
+			$.ajax({
+				url: '{{ url(controller="orders", action="delete_transport_order") }}',
+				type: 'POST',
+				data: {
+					'transport-order-id': $('#transport-order-id').val(), 
+					'order-id': $('#order-id').val()
+					},
+				success: function(msg){
+					$('#transport-order-box').html(msg);
+					$.growlUI('Informacja', 'Zlecenie pomyślnie usunięte!');
+				},
+				error: function(msg){
+					$.growlUI('Błąd', 'Wystąpił błąd podczas usuwania zlecenia!');
+				},
+				complete: function(){
+					$('#transport-order-box').unblock();
+				}				
+			})
+			
+			return false;
+		});
+		
+		/*********MIEJSCA ZAŁ./ROZŁ.*******/
+		$('#add-place').live('click', function(){
+			$('#place-order-box').block({
+				message: '<h2>Zapisywanie</h2>'
+			});
+			
+			$('#order-form').ajaxSubmit({
+				data: {action: 'Add Place'},				
+				success: function(msg){
+					if ($(msg).find('.errorlist').length == 0)
+					{
+						$.growlUI('Informacja', 'Dodano miejsce zał./rozł.');												
+					}	
+					$('#place-order-box').html(msg);					
+				},
+				error: function(msg){
+					$('#place-order-box').html(msg);
+					$.growlUI('Błąd', 'Wystąpił błąd podczas zapisu!');
+				},
+				complete: function(){
+					$('#place-order-box').unblock();		
+				}
+			});
+			
+			return false;
+		});			
+					
+		$('.delete-order-place').live('click', function(){				
+			$('#place-order-box').block({
+				message: '<h2>Usuwanie</h2>'
+			});
+			var url = $(this).attr('href');
+			
+			$.ajax({
+				url: url,
+				success: function(msg){
+					$('#place-order-box').html(msg);
+					$.growlUI('Informacja', 'Usunięto miejsce zał./rozł.');					
+				},
+				error: function(msg){
+					$('#place-order-box').html(msg);
+					$.growlUI('Błąd', 'Wystąpił błąd podczas zapisu!');
+				},
+				complete: function(){
+					$('#place-order-box').unblock();
+				}
+			})
+			
+			return false;
+		});		
+		
+		/****WALUTY*******/
+        if ($('#idcurrency :selected').text() == 'PLN')
+            $('#currencyDate').hide();
+
+        $('#idcurrency').change(function(){
+            if ($('#idcurrency :selected').text() == 'PLN')
+                $('#currencyDate').hide();
+            else
+                $('#currencyDate').slideDown("slow");
+        });	
+		
+		/****NOWE MIEJSCE********/
+		$('#create-place').live('click', function(){
+			$('#new-place-box').block({
+				message: '<h2>Zapisywanie</h2>'
+			});
+			
+			$('#order-form').ajaxSubmit({
+				data: {action: 'Create Place'},				
+				success: function(msg){
+					if ($(msg).find('.errorlist').length == 0)
+					{
+						$.growlUI('Informacja', 'Dodano miejsce zał./rozł.');
+						$tabs.tabs('select', 0);						
+					}	
+					$('#new-place-box').html(msg);										 						
+				},
+				error: function(msg){
+					$('#new-place-box').html(msg);
+					$.growlUI('Błąd', 'Wystąpił błąd podczas zapisu!');
+				},
+				complete: function(){
+					$('#new-place-box').unblock();		
+				}
+			});
+			
+			return false;
+		})
+		
+        var $dialog = $("#dialog").dialog({
+            bgiframe: true,
+            resizable: false,
+            autoOpen: false,
+            height:140,
+            modal: true,
+            overlay: {
+                    backgroundColor: '#000',
+                    opacity: 0.5
+            },
+            buttons: {
+                'Usuń': function() {
+                        $(this).dialog('close');
+                        var $page = $('#deleteOrder').attr('href');
+                        window.location.replace($page);
+                },
+                'Anuluj': function() {
+                        $(this).dialog('close');
+                }
+            }
+        });
+
+        $dialog.dialog('close');
+
+        $('#deleteOrder').click(function(){
+            $dialog.dialog('open');
+        });
+		
+		$("#companyField").autocomplete(
+			"/orders/get_companies", {
+		        delay:10,
+		        minChars:2,
+		        matchSubset:1,
+		        matchContains:1,
+		        cacheLength:10,
+		        formatItem: function(item) {
+	                return item[0];
+	            },
+		        autoFill:true
+		}).result(function(event, data, formatted) {
+			$("#idCompany").val(data[1]);		
+		});					    
+    });		
+</script>
+
+{% endblock %}

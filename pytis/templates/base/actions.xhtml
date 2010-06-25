@@ -1,0 +1,5 @@
+<select name="action">
+{% for value, label in c.actions %}
+	<option value="{{ value|string }}">{{ label|string }}</option>
+{% endfor %}
+</select>

@@ -1,0 +1,37 @@
+{% extends "/base/index.html" %}
+{% block title %}Dodanie nowej serii{% endblock %}	
+
+{% block content %}
+
+<h2>Dodanie nowej serii</h2>
+
+{{ h.form(url(controller='documents', action='create'), method="post") }}
+<fieldset class="view">
+	<div>
+		<label>Nazwa:</label>
+		{{ h.text("name", id="nameField") }}
+	</div>
+	<hr />
+	<div>
+		<label>Typ dokumentu:</label>
+		{{ h.select("documentType", None, c.document_types, prompt="Wybierz...") }}
+	</div>
+	<hr />
+	<div>
+		<label>Wzorzec:</label>
+		{{ h.text("pattern", id="patternField") }}
+	</div>
+	<hr />
+	<div>
+		<label>Numer początkowy:</label>
+		{{ h.text("startNumber", id="startNumberField") }}
+	</div>
+</fieldset>
+<div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">
+	<div class="fg-buttonset ui-helper-clearfix">
+		{{ h.submit("Zapisz") }}								
+	</div>
+</div>		
+{{ h.end_form() }}
+
+{% endblock %}

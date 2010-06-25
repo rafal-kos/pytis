@@ -1,0 +1,376 @@
+{% macro with_errors(field) %}	    
+    {% if field.errors %}  		
+        <ul class="errorlist">
+        	{% for error in field.errors %}<li>{{ error|e }}</li>{% endfor %}
+		</ul>    
+    {% endif %}    
+{% endmacro %}
+
+{% macro render_field(field, catch_kwargs=True) %}
+	{{ field.label }}
+	{{ field(**kwargs) }}
+	
+	{% if field.errors %}  		
+        <ul class="errorlist">
+        	{% for error in field.errors %}<li>{{ error|e }}</li>{% endfor %}
+		</ul>    
+    {% endif %}
+{%- endmacro %}
+
+{% macro delegation_list() %}
+	<table>
+		<thead>
+			<th>L.p.</th>
+			<th>Numer</th>			
+			<th>Kierowca</th>
+			<th>Ciągnik</th>
+			<th>Naczepa</th>
+			<th></th>
+			<th></th>
+		</thead>
+		<tbody>					
+			{% for delegation in c.delegations %}
+				<tr>
+				<td>
+					{{ loop.index }}
+					<input type="hidden" value="{{ delegation.id }}" class="id-delegation" />
+				</td>
+				<td>{{ delegation.number }}</td>
+				<td>{{ delegation.driver.full_name }}</td>
+				<td>{{ delegation.truck.registration }}</td>
+				<td>{{ delegation.semitrailer.registration }}</td>
+				<td>
+					<a href="#" class="btn action create append-delegation">
+						<span><span>Dopnij</span></span>
+					</a>
+				</td>
+				<td>
+					<a href="{{ url(controller='delegations', action='show_orders', id=delegation.id) }}" 
+						class="show-orders-link" title="{{ delegation.id }}">Więcej...</a>
+				</td>
+				</tr>
+			{% endfor %}						
+		</tbody>
+	</table>
+
+<script type="text/javascript">
+	$('.show-orders-link').bind('click', function(){
+		var row = $(this).parent().parent();
+		var id = $(this).attr('title');
+		var is_visible = (!$('.' + id + '-orders-row').length) ? false : true;			
+		
+		if (is_visible){
+			$('.' + id + '-orders-row').remove();
+		} else {					
+			$.ajax({
+				url: $(this).attr('href'),
+				type: 'GET',
+				success: function(msg){				
+					row.after(msg); 
+				},
+				error: function(msg){
+					alert(msg);
+				}			
+			});	
+		}
+		
+		return false;
+	})
+</script>		
+		
+{%- endmacro %}
+
+{% macro new_delegation() %}		
+	<fieldset class="module-right aligned">
+		<h2>Istniejące delegacje</h2>
+		<div class="form-row">					
+			{{ h.select('driver-select', '', c.drivers, prompt='Wybierz...', id='driver-select') }}
+		</div>
+		<div class="form-row" id="delegation-list">
+	</fieldset>
+	
+	<fieldset class="module aligned">
+		<h2>Nowa delegacja</h2>
+		<div class="form-row">
+			<div>
+				{{ render_field(c.delegation_form.driver) }}		
+			</div>
+		</div>
+		<div class="form-row">
+			<div>
+				{{ render_field(c.delegation_form.truck) }}
+			</div>
+		</div>
+		<div class="form-row">
+			<div>
+				{{ render_field(c.delegation_form.semitrailer) }}
+			</div>
+		</div>
+		<div class="form-row">
+			<div>
+				{{ render_field(c.delegation_form.start_counter) }}
+			</div>
+		</div>
+		<div class="form-row">
+			<div>
+				{{ h.submit('Zapisz', name='action', value='Add Delegation', id='new-delegation') }}
+			</div>
+		</div>			
+	</fieldset>
+	
+{%- endmacro %}
+
+{% macro show_delegation() %}
+	<h2>Delegacja</h2>
+	<div class="form-row">
+		<div class="field-box">
+			<label>Numer:</label>
+			<input type="text" readonly="true" value="{{ c.order.delegation.number }}" />
+		</div>
+		<div class="field-box">
+			<label>Kierowca</label>
+			<input type="text" readonly="true" value="{{ c.order.delegation.driver.full_name }}" />
+		</div>
+	</div>
+	<div class="form-row">
+		<div class="field-box">
+			<label>Ciągnik:</label>
+			<input type="text" readonly="true" value="{{ c.order.delegation.truck.registration }}" />
+		</div>
+		<div class="field-box">
+			<label>Naczepa:</label>
+			<input type="text" readonly="true" value="{{ c.order.delegation.semitrailer.registration }}" />
+		</div>
+	</div>
+	<div class="form-row">
+		<div class="field-box">
+			{{ h.link_edit('Edytuj', url(controller='delegations', action='edit', id=c.order.delegation.id)) }}
+			<a href="{{ url(controller='delegations', action='print_delegation', id=c.order.delegation.id) }}" class="btn action print"><span><span>Drukuj</span></span></a>
+			<a href="#" class="btn action delete" id="remove-delegation"><span><span>Odepnij</span></span></a>
+		</div>
+	</div>	
+{%- endmacro %}
+
+{% macro show_transport_order(order, form) %}
+	<h2>Zlecenie transportowe</h2>
+	<div class="bottom">
+		<div class="form-row">
+	    	<div>
+	    		{{ form.id(id="transport-order-id") }}
+				{{ render_field(form.number, class_="important") }}            																	
+	    	</div>				
+	    </div>
+	    <div class="form-row">
+	        <div>
+	            {{ form.idCompany(id="idCompanyOrder") }}
+				{{ render_field(form.company, class_="important vMediumTextField", id="companyOrderField") }}            							
+	        </div>
+	    </div>
+	    <div class="form-row">
+	        <div>                 
+				{{ render_field(form.driverName, class_="vMediumTextField") }}              		
+	        </div>
+	    </div>
+	    <div class="form-row">
+	        <div>                    
+				{{ render_field(form.tractorName, class_="vMediumTextField") }}            		                    
+	        </div>
+	    </div>
+	    <div class="form-row">
+	        <div>
+	            {{ form.freight.label }}
+	    		{{ form.freight() }}					
+				{{ form.currency() }}
+				
+				{{ with_errors(form.freight) }}
+	        </div>
+	    </div>
+		<div class="form-row">
+	        <div>
+	        	{{ render_field(form.description, class_="vMediumTextField") }}                                        
+	        </div>
+	    </div>
+		
+		<div class="form-row">
+			{{ h.submit('Zapisz', name='action', value='Save TO', id='save-transport-order') }}
+			
+			{% if order.transport_order is not none and order.places|length > 0 %}
+				{{ h.link_print('Drukuj', url(controller="orders", action="print_transport_order", id=order.id)) }}                
+	        {% endif %}
+			
+			{% if order.transport_order is not none %}
+				{{ h.link_delete('Usuń', "#", id='delete-transport-order') }}                    
+	        {% endif %}		
+		</div>		 
+	</div>
+	
+<script type="text/javascript">
+	$("#companyOrderField").autocomplete(
+			"/orders/get_companies", {
+		        delay:10,
+		        minChars:2,
+		        matchSubset:1,
+		        matchContains:1,
+		        cacheLength:10,
+		        formatItem: function(item) {
+	                return item[0];
+	            },
+		        autoFill:true
+		}).result(function(event, data, formatted) {
+			$("#idCompanyOrder").val(data[1]);		
+		});
+</script>
+{%- endmacro %}
+
+{% macro show_places(form, places) %}
+<fieldset class="module-right aligned">
+	<h2>Miejsca zał./rozł.</h2>
+	<div class="form-row">
+		<div>
+			{{ form.idPlace(id="idPlace") }}
+			{{ render_field(form.idType) }} 
+		</div>
+	</div>
+	<div class="form-row">
+		<div>
+			{{ render_field(form.place, class_="vMediumTextField") }} 
+		</div>
+	</div>
+	<div class="form-row">
+		<div>
+			{{ render_field(form.placeDate, id="placeDate") }} 
+		</div>
+	</div>
+	<div class="form-row">
+		{{ h.submit("Dodaj", name="action", value="Add Place", id='add-place') }}
+	</div>
+</fieldset>
+
+<fieldset class="module aligned">
+    <h2>Miejsca zał./rozł.</h2>
+	<div class="bottom">				
+    {% if places %}
+        <table>
+            <thead>
+                <tr>
+                	<th>L.p.</th>
+                    <th>Typ</th>
+                    <th>Miasto</th>
+                    <th style="width: 30px;">Data</th>
+                    <th class="button-column">Usuń</th>
+                </tr>
+            </thead>
+            <tbody id="orderPlaces">
+                {% for item in places %}                    
+					<tr class="{{ loop.cycle('row1', 'row2') }}">
+				    	<td>
+				    		{{ loop.index }}
+				    	</td>    		
+				        <td>
+				           {% if item.type == 1 %}
+				                        Załadunek
+				           {% else %}
+				                        Rozładunek
+				           {% endif %}
+				        </td>
+				        <td>
+				           {{ item.place.country.code|upper }} {{ item.place.city }}
+				        </td>
+				        <td>
+				           {{ item.date }}
+				        </td>
+				        <th>
+				        	{{ h.link_delete('', url(controller='orders', action='delete_place_order', idOrder=item.idOrder, id=item.id,), class_='delete-order-place') }}            
+				        </th>
+				    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}			
+	
+	</div>
+</fieldset>	
+
+
+<script type="text/javascript">
+	$("#place").autocomplete(
+        "/orders/get_company_places", {
+            delay:10,
+            minChars:1,
+            matchSubset:1,
+            matchContains:1,	            	            
+            formatItem: function(item) {
+                return item[0];
+            },
+            autoFill:true,
+            extraParams: {
+                id_company: function() { return  $("#idCompany").val(); }
+			}
+	}).result(function(event, data, formatted) {
+		$("#idPlace").val(data[1]);		
+	});
+</script>
+{%- endmacro %}
+
+{% macro new_place(form) %}
+<h2>Dodaj miejsce rozł./zał.</h2>
+<div class="bottom">            
+<div class="form-row">
+    <div>
+    	{{ form.idCompany() }}
+		{{ render_field(form.name, class_="vMediumTextField") }}        
+    </div>
+</div>
+<div class="form-row">
+    <div>
+    	{{ render_field(form.country, class_="vMediumTextField", id="country-list") }}        
+    </div>
+</div>
+<div class="form-row">
+    <div>
+    	{{ render_field(form.city, class_="vMediumTextField") }}        
+    </div>
+</div>
+<div class="form-row">
+    <div>
+    	{{ render_field(form.zip, class_="vMediumTextField") }}        
+    </div>
+</div>
+<div class="form-row">
+    <div>
+    	{{ render_field(form.street, class_="vMediumTextField") }}        
+    </div>
+</div>
+<div class="form-row">
+	{{ h.submit('Zapisz', name='action', value='Create Place', id='create-place') }}					
+</div> 
+
+</div> 
+
+<script type="text/javascript">
+	$(function() {
+		$("#country-list").msDropDown();
+	})		
+</script>	
+{%- endmacro %}
+
+{% macro show_orders(delegation_id, orders) %}
+	<tr class="{{ delegation_id }}-orders-row">
+		<td colspan="2"><b>Numer</b></td>
+		<td colspan="2"><b>Trasa</b></td>
+		<td colspan="3"><b>Kontrahent</b></td>		
+	</tr>
+	{% for order in orders %}	
+		<tr class="{{ delegation_id }}-orders-row">
+			<td colspan="2">				
+				{{ order.number }}
+			</td>
+			<td colspan="2">				
+				{{ order.route }}
+			</td>
+			<td colspan="3">				
+				{{ order.company.name }}
+			</td>			
+		</tr>
+	{% endfor %}
+{%- endmacro %}

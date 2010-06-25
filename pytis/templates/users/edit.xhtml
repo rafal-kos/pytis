@@ -1,0 +1,100 @@
+{% extends "/base/index.html" %}
+{% block title %}Edycja użytkownika{% endblock %}
+
+{% block include %}
+	<script type="text/javascript">
+		var params = {};
+		params.test = 'test';
+	     swfobject.embedSWF(
+	     	"/flash/open-flash-chart.swf", "chart_demo2",
+	     	"800", "300", "9.0.0", "/static/expressInstall.swf",
+	     	{
+				"data-file":"/orders/month_balance/{{ c.user.id }}",
+				"loading": "Ładowanie danych..."
+		  	}, params );
+		 
+		 swfobject.embedSWF(
+	     	"/flash/open-flash-chart.swf", "chart_demo",
+	     	"800", "300", "9.0.0", "/static/expressInstall.swf",
+	     	{
+				"data-file":"/orders/year_balance/{{ c.user.id }}",
+		  		"loading": "Ładowanie danych..."
+			} );
+    </script>
+{% endblock %}
+
+{% block content %}
+
+<div id="content-main">	
+	
+	{{ h.form(url(controller='users', action='edit', id=request.urlvars['id']), method="post") }}
+	<fieldset class="module aligned">
+        <h2>Edycja użytkownika</h2>		
+		<div class="form-row">
+        	<div>
+        		{{ c.form.id() }}
+    			{{ c.form.login.label }}
+				{{ c.form.login(class_="vMediumTextField") }}
+				
+				{{ forms.with_errors(c.form.login) }}
+			</div>
+		</div>
+		<div class="form-row">
+        	<div>
+    			{{ c.form.email.label }}
+				{{ c.form.email(class_="vMediumTextField") }}
+				
+				{{ forms.with_errors(c.form.email) }}
+			</div>
+		</div>
+		<div class="form-row">
+        	<div>
+    			{{ c.form.first_name.label }}
+				{{ c.form.first_name(class_="vMediumTextField") }}
+				
+				{{ forms.with_errors(c.form.first_name) }}
+			</div>
+		</div>
+		<div class="form-row">
+        	<div>
+    			{{ c.form.last_name.label }}
+				{{ c.form.last_name(class_="vMediumTextField") }}
+				
+				{{ forms.with_errors(c.form.last_name) }}
+			</div>
+		</div>			
+		<div class="form-row">
+        	<div>
+    			{{ c.form.phone.label }}
+				{{ c.form.phone(class_="vMediumTextField") }}				
+			</div>
+		</div>
+		<div class="form-row">
+        	<div>
+    			{{ c.form.groups.label }}
+				{{ c.form.groups() }}				
+			</div>
+		</div>
+		
+		<div class="form-row groups">
+			<div>
+				<label>Roczne zestawienie:</label>				
+				<div class="chart" id="chart_demo">					
+				</div>
+			</div>			            
+        </div>		
+		<div class="form-row groups">
+			<div>
+				<label>Miesięczne zestawienie:</label>
+	      		<div class="chart" id="chart_demo2"></div>
+			</div>      
+        </div>
+    </fieldset>
+    <div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">
+		{{ h.submit('Zapisz') }}							
+	</div>
+    {{ h.end_form() }}	
+    
+</div>
+
+{% endblock %}

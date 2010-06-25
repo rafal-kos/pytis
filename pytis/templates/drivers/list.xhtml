@@ -1,0 +1,170 @@
+{% extends "/base/index.html" %}
+{% block title %}Lista kierowców{% endblock %}
+
+{% block include %}
+	{{ h.javascript_link(url('/js/scripts/tools.js'), 
+						 url('/js/scripts/list.js'),
+						 url('/js/scripts/list.actions.js')
+						 ) }}			
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+	<h1>Lista kierowców</h1>
+	
+	<div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">
+		{{ h.link_add('Nowy kierowca', url(controller='drivers', action='add')) }}
+		{{ h.link_add('Nowy ciągnik', url(controller='drivers', action='add_truck')) }}
+		{{ h.link_add('Nowa naczepa', url(controller='drivers', action='add_semitrailer')) }}		
+	</div>
+			
+	<div id="changelist" class="module filtered">
+        <div class="changelist-content">
+            <div class="result-list-container">
+                <div class="actions">
+                    
+                </div>
+                <div class="result-list" id="list-table">
+                	<h3 style="padding-left: 10px;">Lista kierowców</h3>
+                    
+					<table id="item-list" >
+						<thead>		
+						<tr>
+							<th>Nazwisko</th>			
+							<th>Imię</th>			
+							<th>Numer dowodu</th>
+							<th>Tel. kontaktowy</th>						
+						</tr>	
+						</thead>
+						<tbody>       
+						  	{% for driver in c.drivers %}
+						    	{{ buildrow_driver(driver) }}	       
+					       	{% endfor %}
+						</tbody>		
+					</table>
+					
+                </div>                
+				
+				<div class="result-list" id="list-table">
+					<h3 style="padding-left: 10px;">Lista ciągników</h3>
+                    
+					<table id="item-list" >
+						<thead>		
+						<tr>
+							<th>Rejestracja</th>
+							<th>Marka</th>
+							<th>Termin OC</th>
+							<th>Termin AC</th>
+							<th>Termin przeglądu</th>
+							<th>Termin winiety</th>
+							<th>Numer VIN</th>
+							<th>Rocznik</th>
+							<th>Norma EURO</th>
+							<th>Aktywna</th>																
+						</tr>	
+						</thead>
+						<tbody>       
+						  	{% for truck in c.trucks %}
+						    	{{ buildrow_truck(truck) }}	       
+					       	{% endfor %}
+						</tbody>		
+					</table>
+					
+                </div>
+				
+				<div class="result-list" id="list-table">
+					<h3 style="padding-left: 10px;">Lista naczep</h3>
+                    
+					<table id="item-list" >
+						<thead>		
+						<tr>
+							<th>Rejestracja</th>
+							<th>Termin OC</th>
+							<th>Termin AC</th>
+							<th>Termin przeglądu</th>							
+							<th>Numer VIN</th>
+							<th>Rocznik</th>
+							<th>Aktywna</th>					
+						</tr>	
+						</thead>
+						<tbody>       
+						  	{% for semitrailer in c.semitrailers %}
+						    	{{ buildrow_semitrailer(semitrailer) }}	       
+					       	{% endfor %}
+						</tbody>		
+					</table>
+					
+                </div>
+            </div>
+        </div>
+	</div>	
+</div>	
+		
+{% endblock %}
+
+{% macro buildrow_driver(driver) %}    
+        <tr>    
+        <td valign="top">
+           {{ h.link_to(
+                driver.last_name,
+                url(
+                    controller='drivers'|string,
+                    action='edit',
+                    id=driver.id|string
+                )
+            ) }}
+           
+        </td>      
+		<td>{{ driver.first_name }}</td>
+		<td>{{ driver.identity_card_number }}</td>
+		<td>{{ driver.phone }}</div>         
+        
+        </tr>
+{%- endmacro %}
+
+{% macro buildrow_truck(truck) %}
+	<tr>    
+        <td valign="top">
+           {{ h.link_to(
+                truck.registration,
+                url(
+                    controller='drivers'|string,
+                    action='edit_truck',
+                    id=truck.id|string
+                )
+            ) }}
+           
+        </td>
+		<td>{{ truck.model.value }}</td>
+		<td>{{ truck.oc_validity_date }}</td>
+		<td>{{ truck.ac_validity_date }}</td>
+		<td>{{ truck.technical_review_validity_date }}</td>
+		<td>{{ truck.vignette_validity_date }}</td>
+		<td>{{ truck.vin_number }}</td>
+		<td>{{ truck.year_of_production }}</td>
+		<td>{{ truck.euro_norm.value }}</td>
+		<td valign="top">{{ h.checkbox('enabled', checked=truck.is_active) }}</td>
+	</tr>
+{%- endmacro %}
+
+{% macro buildrow_semitrailer(semitrailer) %}    
+    <tr>    
+        <td valign="top">
+           {{ h.link_to(
+                semitrailer.registration,
+                url(
+                    controller='drivers'|string,
+                    action='edit_semitrailer',
+                    id=semitrailer.id|string
+                )
+            ) }}
+           
+        </td>    
+		<td>{{ semitrailer.oc_validity_date }}</td>
+		<td>{{ semitrailer.ac_validity_date }}</td>
+		<td>{{ semitrailer.technical_review_validity_date }}</td>
+		<td>{{ semitrailer.vin_number }}</td>
+		<td>{{ semitrailer.year_of_production }}</td>      
+        <td valign="top">{{ h.checkbox('enabled', checked=semitrailer.is_active) }}</td>
+    </tr>
+{%- endmacro %}

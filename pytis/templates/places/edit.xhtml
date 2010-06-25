@@ -1,0 +1,58 @@
+{% extends "/base/index.html" %}
+{% block title %}Edycja magazynu{% endblock %}
+
+{% block content %}
+<h1>Edycja magazynu</h1>
+
+{{ h.form(url(controller='companies', action='edit_place', id=request.urlvars['id']), method="post") }}
+<div id="content-main">
+    <div>
+        <fieldset class="module aligned">
+            <div class="form-row">
+                <div>
+                	{{ c.place_form.id() }}
+                	{{ c.place_form.idCompany() }}
+                    {{ c.place_form.name.label }}
+					{{ c.place_form.name(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.place_form.name) }}
+                </div>
+            </div>
+			<div class="form-row">
+				<div>
+					{{ forms.render_field(c.place_form.country) }}
+				</div>
+			</div>
+            <div class="form-row">
+                <div>
+                    {{ c.place_form.city.label }}
+					{{ c.place_form.city(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.place_form.city) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.place_form.zip.label }}
+					{{ c.place_form.zip(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.place_form.zip) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.place_form.street.label }}
+					{{ c.place_form.street(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.place_form.street) }}
+                </div>
+            </div>
+        </fieldset>
+        <div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">
+			{{ h.submit('Zapisz') }}							
+		</div>
+    </div>
+</div>
+{{ h.end_form() }}                
+
+{% endblock %}

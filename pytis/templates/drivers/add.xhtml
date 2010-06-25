@@ -1,0 +1,75 @@
+{% extends "/base/index.html" %}
+{% block title %}Nowy kierowca{% endblock %}	
+
+{% block content %}
+{{ h.form(url(controller='drivers', action='add'), method="post") }}
+<div id="content-main">
+	<fieldset class="module aligned">
+		<div class="form-row">			
+			{{ forms.render_field(c.form.first_name, class_="vMediumTextField") }}							
+		</div>
+		<div class="form-row">			
+			{{ forms.render_field(c.form.second_name, class_="vMediumTextField") }}							
+		</div>		
+		<div class="form-row">
+			<div>
+				{{ forms.render_field(c.form.last_name, class_="vMediumTextField") }}					
+			</div>
+		</div>
+		<div class="form-row">
+			<div>
+				{{ forms.render_field(c.form.identity_card_number, class_="vMediumTextField") }}				
+			</div>
+		</div>
+		<div class="form-row">
+			<div>
+				{{ forms.render_field(c.form.phone, class_="vMediumTextField") }}
+			</div>
+		</div>
+		<div class="form-row">
+			<div>
+				{{ forms.render_field(c.form.birthday_date, class_="date-field") }}
+			</div>
+		</div>
+		<div class="form-row">
+			<div>
+				{{ forms.render_field(c.form.medical_tests_date, class="date-field") }}				
+			</div>
+		</div>
+		<div class="form-row">
+			<div>
+				{{ forms.render_field(c.form.psychology_tests_date, class="date-field") }}
+			</div>
+		</div>
+		<div class="form-row">
+			<div>
+				{{ forms.render_field(c.form.employment_date, class_="date-field") }}
+			</div>
+		</div>
+		<div class="form-row">
+			<div>
+				{{ forms.render_field(c.form.is_active) }}
+			</div>
+		</div>
+	</fieldset>
+	
+	<div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">
+		{{ h.submit('Zapisz') }}									
+	</div>
+	
+</div>		
+{{ h.end_form() }}
+
+{% endblock %}
+
+{% block footer %}
+<script> 
+	$(function() {
+		$('.date-field').each(function(){
+			$(this).datepicker({
+				dateFormat: 'yy-mm-dd'
+			})
+		})        
+	});
+</script>
+{%- endblock %}

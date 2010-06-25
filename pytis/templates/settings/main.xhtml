@@ -1,0 +1,98 @@
+{% extends "/base/index.html" %}
+{% block title %}Ustawienia{% endblock %}
+
+{% block content %}
+<div id="content-main">
+	<h1>Ustawienia</h1>
+	{{ c.form }}
+	{{ h.form(url(controller='settings', action='list'), method="post") }}
+		<fieldset class="module aligned">
+			<h2>Ogólne</h2>
+			<div class="form-row">
+				<div>
+					{{ c.form.company_name.label }}
+					{{ c.form.company_name(class_="vMediumTextField") }}									
+					
+					{{ forms.with_errors(c.form.company_name) }}
+				</div>
+			</div>
+			<div class="form-row">
+				<div>
+					{{ c.form.company_city.label }}
+					{{ c.form.company_city(class_="vMediumTextField") }}									
+					
+					{{ forms.with_errors(c.form.company_city) }}
+				</div>
+			</div>
+			<div class="form-row">
+				<div>
+					{{ c.form.company_zip.label }}
+					{{ c.form.company_zip(class_="vMediumTextField") }}									
+					
+					{{ forms.with_errors(c.form.company_zip) }}
+				</div>
+			</div>
+			<div class="form-row">
+				<div>
+					{{ c.form.company_street.label }}
+					{{ c.form.company_street(class_="vMediumTextField") }}									
+					
+					{{ forms.with_errors(c.form.company_street) }}
+				</div>
+			</div>
+			<div class="form-row">
+				<div>
+					{{ c.form.company_nip.label }}
+					{{ c.form.company_nip(class_="vMediumTextField") }}									
+					
+					{{ forms.with_errors(c.form.company_nip) }}
+				</div>
+			</div>
+			<div class="form-row">
+				<div>
+					{{ c.form.company_regon.label }}
+					{{ c.form.company_regon(class_="vMediumTextField") }}									
+					
+					{{ forms.with_errors(c.form.company_regon) }}
+				</div>
+			</div>
+			<div class="form-row">
+				<div>
+					{{ c.form.company_telfax.label }}
+					{{ c.form.company_telfax(class_="vMediumTextField") }}									
+					
+					{{ forms.with_errors(c.form.company_telfax) }}
+				</div>
+			</div>
+			<div class="form-row">
+				<div>
+					{{ c.form.company_krs.label }}
+					{{ c.form.company_krs(class_="vMediumTextField") }}									
+					
+					{{ forms.with_errors(c.form.company_krs) }}
+				</div>
+			</div>
+			<div class="form-row">
+				<div>
+					{{ c.form.company_bank_account_1.label }}
+					{{ c.form.company_bank_account_1(class_="vMediumTextField") }}									
+					
+					{{ forms.with_errors(c.form.company_bank_account_1) }}
+				</div>
+			</div>
+			<div class="form-row">
+				<div>
+					{{ c.form.company_bank_account_2.label }}
+					{{ c.form.company_bank_account_2(class_="vMediumTextField") }}									
+					
+					{{ forms.with_errors(c.form.company_bank_account_2) }}
+				</div>
+			</div>
+		</fieldset>
+		<div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">
+			{{ h.submit('Zapisz') }}
+		</div>
+	{{ h.end_form() }}	
+</div>	
+
+{%- endblock %}

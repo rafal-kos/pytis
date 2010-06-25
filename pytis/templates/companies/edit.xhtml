@@ -1,0 +1,240 @@
+{% extends "/base/index.html" %}
+{% block title %}Edycja kontrahenta{% endblock %}	
+
+{% block include %}	
+	{{ h.javascript_link(url('/jquery/jquery.dd.js')) }}
+	{{ h.stylesheet_link(url('/css/dd.css')) }}		
+
+	<script type="text/javascript">
+		var params = {};
+		params.test = 'test';
+	     swfobject.embedSWF(
+	     	"/flash/open-flash-chart.swf", "balance_chart",
+	     	"800", "300", "9.0.0", "/static/expressInstall.swf",
+	     	{
+				"data-file":"/orders/company_balance/{{ c.company.id }}",
+				"loading": "Ładowanie danych..."
+		  	}, params );		 
+			
+		$(function() {
+			$("#country-list").msDropDown();
+			$("#tabs").tabs();			
+		});
+    </script>
+{% endblock %}
+
+{% block content %}
+
+<div id="content-main">
+<div id="tabs">		
+    <ul>
+        <li><a href="#tabs-1">Kontrahent</a></li>
+        <li><a href="#tabs-2">Magazyny</a></li>
+		<li><a href="#tabs-3">Obrót roczny</a></li>
+    </ul>
+
+    <!-- KONTRAHENT -->
+	{{ h.secure_form(url(controller='companies', action='edit', id=request.urlvars['id']), method="post") }}
+    <div id="tabs-1">        
+        <fieldset class="module aligned">
+            <div class="form-row">
+                <div>                	
+                    {{ c.form.name.label }}
+					{{ c.form.name(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.form.name) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.form.shortName.label }}
+					{{ c.form.shortName(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.form.shortName) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.form.address.label }}
+					{{ c.form.address(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.form.address) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.form.zip.label }}
+					{{ c.form.zip(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.form.zip) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.form.city.label }}
+					{{ c.form.city(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.form.city) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.form.regon.label }}
+					{{ c.form.regon(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.form.regon) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.form.nip.label }}
+					{{ c.form.nip(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.form.nip) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.form.payment.label }}
+					{{ c.form.payment() }}
+					
+					{{ forms.with_errors(c.form.payment) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.form.paymentForm.label }}
+					{{ c.form.paymentForm() }}
+					
+					{{ forms.with_errors(c.form.paymentForm) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.form.tax.label }}
+					{{ c.form.tax() }}
+					
+					{{ forms.with_errors(c.form.tax) }}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div>
+                    {{ c.form.description.label }}
+                    {{ c.form.description() }}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div>
+                    <label>Utworzono:</label>
+                    {{ h.text("created_at", value=c.company.created_at, id="createdField", disabled = true, class_="vTextField") }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    <label>Modyfikowano:</label>
+                    {{ h.text("updated_at", value=c.company.updated_at, id="updatedField", disabled = true, class_="vTextField") }}
+                </div>
+            </div>
+        </fieldset>
+		
+		<div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">
+			{{ h.submit('Zapisz', name='action', value='company') }}							
+		</div>				        
+    </div>
+
+    <!-- MAGAZYNY -->
+
+    <div id="tabs-2">                
+        <fieldset class="module aligned">
+        	<h2>Dodaj magazyn</h2>
+            <div class="form-row">
+                <div>
+                	{{ c.place_form.idCompany() }}
+                    {{ c.place_form.name.label }}
+					{{ c.place_form.name(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.place_form.name) }}
+                </div>
+            </div>
+			<div class="form-row">
+				<div>
+					{{ forms.render_field(c.place_form.country, id='country-list') }}
+				</div>
+			</div>
+            <div class="form-row">
+                <div>
+                    {{ c.place_form.city.label }}
+					{{ c.place_form.city(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.place_form.city) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.place_form.zip.label }}
+					{{ c.place_form.zip(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.place_form.zip) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.place_form.street.label }}
+					{{ c.place_form.street(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.place_form.street) }}
+                </div>
+            </div>
+        </fieldset>
+		
+        <div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">
+			{{ h.submit('Zapisz', name='action', value='place') }}							
+		</div>
+
+        <fieldset class="module aligned">
+            <h2>Miejsca zał./rozł.</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Lp.</th>
+                        <th>Nazwa</th>
+						<th>Kraj</th>
+                        <th>Miasto</th>
+                        <th>Kod</th>
+                        <th>Ulica</th>
+                        <th>Edycja</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in c.company.places %}
+                    <tr class="{{ loop.cycle('row1', 'row2') }}">
+                        <td>{{ loop.index }}</td>
+                        <td>{{ item.name }}</td>
+						<td>{{ item.country.code }}</td>
+                        <td>{{ item.city }}</td>
+                        <td>{{ item.zip }}</td>
+                        <td>{{ item.street }}</td>
+                        <th>
+                            <a 
+                               href="{{ url(
+                               controller='companies'|string,
+                               action='edit_place',
+                               id=item.id|string
+                            ) }}">Edycja</a>
+                        </th>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </fieldset>				
+    </div>
+	{{ h.end_form() }}
+	<div id="tabs-3">
+		<div class="chart" id="balance_chart"></div>		
+	</div>
+</div>
+</div>
+
+{% endblock %}

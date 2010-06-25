@@ -1,0 +1,57 @@
+{%macro buildrow(correct, row) %}    
+    <tr class="{{ row }} correct-{{ correct.id }}">
+    	<td>{{ h.checkbox(h.ACTION_CHECKBOX_NAME, value=correct.id, class_="check") }}</td>
+        <td>
+           {{ h.link_to(
+                correct.number,
+                url(
+                    controller='corrects'|string,
+                    action='edit',
+                    id=correct.id|string
+                )
+            ) }}           
+        </td>
+		<td>
+			{{ h.link_to(
+				correct.invoice.number,
+				url(
+					controller='invoices'|string,
+					action='edit',
+					id=correct.invoice.id|string
+				)
+			) }}
+		</td>
+        <td>
+        	{{ h.link_to(
+                correct.company.name|string,
+                url(
+                    controller='companies'|string,
+                    action='edit',
+                    id=correct.company.id|string
+                )
+            ) }}
+        </td>
+        <td>{{ correct.positions|length }}</td>
+		<td>{{ correct.payment_form.value }} </td>               
+    </tr>
+{%- endmacro %}
+
+<p class="paginator">{{ c.paginator.pager('~2~', onclick="$('#list-table').load('%s'); return false;") }}</p>
+<table id="item-list">
+	<thead>		
+	<tr>
+		<th><input id="select_all" class="checkAll" type="checkbox" value="" name="select_all"/></th>
+		<th>Numer korekty</th>
+		<th>Do faktury</th>
+		<th>Kontrahent</th>
+		<th>Pozycje</th>
+		<th>Sposób zapłaty</th>											
+	</tr>	
+	</thead>
+	<tbody>       
+	  	{% for item in c.paginator %}
+	    	{{ buildrow(item, loop.cycle('row1', '')) }}
+       	{% endfor %}
+	</tbody>
+</table>
+<p class="paginator">{{ c.paginator.pager('~2~', onclick="$('#list-table').load('%s'); return false;") }}</p>

@@ -1,0 +1,106 @@
+{% extends "/base/index.html" %}
+{% block title %}Edycja delegacji{% endblock %}	
+
+{% block content %}
+
+<div id="content-main">
+    {{ h.form(url(controller='delegations', action='edit', id=request.urlvars['id']), method="post") }}
+    <fieldset class="module aligned">
+        <h2>Delegacja</h2>
+    	<div class="form-row">
+        	<div>
+                    <label>Numer:</label>
+                    <input type="text" readonly="true" value="{{ c.delegation.number }}" />
+                    </div>
+		</div>
+		<div class="form-row">
+        	<div>
+                    {{ forms.render_field(c.form.driver) }}
+                </div>
+		</div>				        
+		<div class="form-row">
+        	<div>
+                    {{ forms.render_field(c.form.truck) }}
+                </div>
+		</div>
+		<div class="form-row">
+        	<div>
+                    {{ forms.render_field(c.form.semitrailer) }}
+                </div>
+		</div>
+		<div class="form-row">
+        	<div>
+                    {{ forms.render_field(c.form.start_counter) }}
+                </div>
+		</div>
+    </fieldset>
+    <div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">
+        {{ h.submit('Zapisz') }}
+        {{ h.link_print('Drukuj',url(controller='delegations', action='print_delegation', id=c.delegation.id)) }}
+    </div>
+    {{ h.end_form() }}
+	
+    <fieldset class="module aligned">
+        <h2>Lista dopiętych zleceń</h2>
+        {% if c.delegation.orders|length %}
+        <table>
+            <thead>
+            <tr>
+                <th class="lp">Lp.</th>
+                <th>Numer</th>
+                <th>Kontrahent</th>
+                <th>Data rozładunku</th>
+                <th>Trasa</th>
+                <th>Fracht</th>
+                <th>Przewoźnik</th>
+                <th>F</th>
+                <th>Edycja</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for order in c.delegation.orders %}
+                    {{ buildrow(order, loop.index, loop.cycle('row1', 'row2')) }}
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </fieldset>
+</div>
+
+{% endblock %}
+
+{% macro buildrow(order, index, row) %}
+    <tr class="{{ row }}">
+        <td>
+           {{ index }}
+        </td>
+        <td>
+            {{ order.number }}
+        </td>
+        <td>
+            {{ order.company.shortName }}
+        </td>
+        <td>
+            {% if order.places|length > 0 %}
+                {{ order.places[-1].date }}
+            {% endif %}
+        </td>
+        <td>
+            {{ order.route }}
+        </td>
+        <td>{{ order.freight }} {{ order.currency.value }} </td>
+        <td>
+            {% if order.transport_order is not none %}
+                {{ order.transport_order.company.shortName }}
+            {% else %}
+                ----
+            {% endif %} 
+        </td>
+        <td>
+            {{ h.checkbox('is_factured', checked = order.isFactured) }}
+        </td>
+        <td>
+            {{ h.link_edit('', url(controller='orders', action='edit', id=order.id)) }}
+        </td>        
+    </tr>
+{%- endmacro %}

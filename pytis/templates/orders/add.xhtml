@@ -1,0 +1,85 @@
+{% extends "/base/index.html" %}
+{% block title %}Dodaj zlecenie{% endblock %}
+
+{% block content %}
+
+<script type="text/javascript">
+    $(function() {          
+        if ($('#idcurrency :selected').text() == 'PLN')
+            $('#currencyDate').hide();
+
+        $('#idcurrency').change(function(){
+            if ($('#idcurrency :selected').text() == 'PLN')
+                $('#currencyDate').hide();
+            else
+                $('#currencyDate').slideDown("slow");
+        })      
+    });
+</script>
+
+<h1>Dodaj zlecenie</h1>
+
+{{ h.form(url(controller='orders', action='add'), method="post") }}
+<div id="content-main">
+    <div>
+        <fieldset class="module aligned">            
+			<div class="form-row">
+            	<div>
+            		{{ c.form.idCompany(id="idCompany") }}
+            		{{ c.form.company.label }}
+					{{ c.form.company(class_="vTextField", id="companyField") }}
+					
+					{{ forms.with_errors(c.form.company) }}				
+            	</div>
+			</div>
+			<div class="form-row">
+            	<div>
+            		{{ c.form.freight.label }}
+					{{ c.form.freight() }}					
+					{{ c.form.currency(id="idcurrency") }}
+					
+					{{ forms.with_errors(c.form.freight) }}					
+            	</div>
+			</div>
+			<div id="currencyDate" class="form-row">
+            	<div>
+            		{{ c.form.isCurrencyDate.label }}
+					{{ c.form.isCurrencyDate() }}
+            	</div>
+			</div>			
+			<div class="form-row">
+            	<div>
+            		{{ c.form.foreignOrder.label }}
+					{{ c.form.foreignOrder(class_="vTextField") }}					
+            	</div>
+			</div>
+        </fieldset>
+        <div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">
+			{{ h.submit('Zapisz') }}							
+		</div>
+    </div>
+</div>
+{{ h.end_form() }}
+
+<script type="text/javascript">	
+$(document).ready(function() {	
+	$("#companyField").autocomplete(
+		"/orders/get_companies",
+		{
+			delay:10,
+			minChars:2,
+			matchSubset:1,
+			matchContains:1,
+			cacheLength:10,					
+			autoFill:true,
+			formatItem: function(item) {
+                return item[0];
+            }
+		}
+	).result(function(event, data, formatted){
+		$("#idCompany").val(data[1]);
+	});	
+});
+
+</script>
+{% endblock %}

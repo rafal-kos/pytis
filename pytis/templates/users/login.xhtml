@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>PyTiS - Logowanie do systemu</title>    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>    
+    {{ h.stylesheet_link(url('/css/base.css')) }}
+    {{ h.stylesheet_link(url('/css/login.css')) }}
+	{{ h.stylesheet_link(url('/css/buttons/buttons.css')) }}
+    	
+</head>
+<body class="login">
+    <div id="container">
+        <div id="header">
+            <div class="admin-title">PyTiS</div>
+        </div>			
+		
+        <div id="content">
+        	{% for message in h.flash.pop_messages() %}
+		        <p class="{{ message.category }}">{{ message }}</p>
+		    {% endfor %}            
+            {{ h.form(url(controller='users', action='authenticate'), id='login-form', method='post')}}
+                <div id="content-main">
+                    <div class="form-row">
+                        <label class="required" for="id_username">Nazwa użytkownika:</label>
+                        <input type="text" id="id_username" name="login"/>
+                    </div>
+                    <div class="form-row">
+                        <label class="required" for="id_password">Hasło:</label>
+                        <input type="password" id="id_password" name="password"/>                        
+                    </div>
+                </div>
+                <div class="submit-row">
+                    <button name="" value="" class="btn action primary login"><span><span>Zaloguj</span></span></button>
+                </div>
+            {{ h.end_form() }}
+        </div>
+    </div>
+</body>
+</html>

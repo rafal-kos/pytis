@@ -1,0 +1,75 @@
+{%macro buildrow(invoice, row) %}    
+    <tr class="{{ row }} invoice-{{ invoice.id }}">
+    	<td>{{ h.checkbox(h.ACTION_CHECKBOX_NAME, value=invoice.id, class_="check") }}</td>
+        <td>
+           {{ h.link_to(
+                invoice.number,
+                url(
+                    controller='invoices'|string,
+                    action='edit',
+                    id=invoice.id|string
+                )
+            ) }}           
+			{% if invoice.is_corrected %}
+				<a href="{{ url(controller='corrects', action='list', id=invoice.id) }}">
+					<img src="/images/correct.png" />
+				</a>  				
+			{% endif %}     
+        </td>
+        <td>
+        	{{ h.link_to(
+                invoice.company.shortName|string,
+                url(
+                    controller='companies'|string,
+                    action='edit',
+                    id=invoice.company.id|string
+                )
+            ) }}
+        </td>
+        <td>{{ invoice.elements|length }}</td>
+        <td>
+        	{% if invoice.isBooked %} 
+				<p style="color: green">TAK</p>
+			{% else %} 
+				<p style="color: red">NIE</p>
+			{% endif %}				
+        </td>
+        <td>{{ invoice.issueDate|default("") }}</td>
+        <td class="right">
+        	{% if invoice.elements %}
+        		{{ "%.2f"|format(invoice.value) }} {{ invoice.elements[0].currency.value }}
+			{% endif %}                
+        </td>
+        <td class="right">
+        	{% if invoice.elements %}
+        		{{ "%.2f"|format(invoice.tax_value) }} {{ invoice.elements[0].currency.value }}
+			{% endif %}               
+        </td>
+		<td class="right">
+			{{ invoice.payment_date }}
+		</td>
+    </tr>
+{%- endmacro %}
+
+<p class="paginator">{{ c.paginator.pager('~2~', onclick="$('#list-table').load('%s'); return false;") }}</p>
+<table id="item-list">
+	<thead>		
+	<tr>
+		<th><input id="select_all" class="checkAll" type="checkbox" value="" name="select_all"/></th>
+		<th>Numer</th>
+		<th>Kontrahent</th>
+		<th>Pozycje</th>				
+		<th>Z</th>
+		<th>Data wystawienia</th>
+		<th>Fracht</th>
+		<th>VAT</th>
+		<th>Data płatności</th>							
+	</tr>	
+	</thead>
+	<tbody>       
+	  	{% for item in c.paginator %}
+	    	{{ buildrow(item, loop.cycle('row1', '')) }}
+       	{% endfor %}
+	</tbody>
+</table>
+<p class="paginator">{{ c.paginator.pager('~2~', onclick="$('#list-table').load('%s'); return false;") }}</p>

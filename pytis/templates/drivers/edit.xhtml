@@ -1,0 +1,164 @@
+{% extends "/base/index.html" %}
+{% block title %}Edycja kierowcy{% endblock %}	
+
+{% block include %}
+	{{ h.stylesheet_link(url('/css/ui.timepickr.css')) }}
+	{{ h.javascript_link(url('/jquery/jquery.utils.lite.min.js'),
+						 url('/jquery/ui.timepickr.js')) }}
+{%- endblock %}
+
+{% block content %}
+{{ h.form(url(controller='drivers', action='edit', id=request.urlvars['id']), method="post") }}
+<div id="content-main">
+	<fieldset class="module aligned">
+		<div class="form-row">
+			<div>
+				{{ forms.render_field(c.form.first_name, class_="vMediumTextField") }}					
+			</div>
+		</div>
+		<div class="form-row">
+			<div>
+				{{ forms.render_field(c.form.second_name, class_="vMediumTextField") }}					
+			</div>
+		</div>
+		<div class="form-row">
+			<div>
+				{{ forms.render_field(c.form.last_name, class_="vMediumTextField") }}					
+			</div>
+		</div>
+		<div class="form-row">
+			<div>
+				{{ forms.render_field(c.form.identity_card_number, class_="vMediumTextField") }}				
+			</div>
+		</div>
+		<div class="form-row">
+			<div>
+				{{ forms.render_field(c.form.phone, class_="vMediumTextField") }}
+			</div>
+		</div>
+		<div class="form-row">
+			<div>
+				{{ forms.render_field(c.form.birthday_date, class_="date-field") }}
+			</div>
+		</div>
+		<div class="form-row">
+			<div>
+				{{ forms.render_field(c.form.medical_tests_date, class="date-field") }}				
+			</div>
+		</div>
+		<div class="form-row">
+			<div>
+				{{ forms.render_field(c.form.psychology_tests_date, class="date-field") }}
+			</div>
+		</div>
+		<div class="form-row">
+			<div>
+				{{ forms.render_field(c.form.employment_date, class_="date-field") }}
+			</div>
+		</div>
+		<div class="form-row">
+			<div>
+				{{ forms.render_field(c.form.is_active) }}
+			</div>
+		</div>
+	</fieldset>
+	
+	<div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">
+		{{ h.submit('Zapisz', name='action', value='edit-driver') }}									
+	</div>
+	
+	{% if c.driver.holidays %}
+	<fieldset class="module aligned">
+		<h2>Lista urlopów</h2>		
+        <table>
+            <thead>
+                <tr>
+                	<th>L.p.</th>
+                	<th>Od</th>
+                    <th>Do</th>
+                    <th>Wystawiono</th>					
+					<th>#</th>
+					<th>#</th>	                    
+                </tr>
+            </thead>
+            <tbody>
+                {% for holiday in c.driver.holidays %}                    
+					<tr class="{{ loop.cycle('row1', 'row2') }}">
+				    	<td>
+				    		{{ loop.index }}
+				    	</td>    		
+				        <td>
+				           {{ holiday.from_date }} {{ holiday.from_time }}
+				        </td>
+				        <td>
+				           {{ holiday.to_date }} {{ holiday.to_time }}
+				        </td>
+				        <td>
+				           {{ holiday.issue_date }}
+				        </td>	
+						<td>							
+							{{ h.link_print('', url(controller='drivers', action='print_holiday', id=holiday.id), title='Drukuj') }}							
+						</td>			        
+						<td>
+							{{ h.link_delete('', url(controller='drivers', action='delete_holiday', id=holiday.id), title='Usuń') }}
+						</td>
+				    </tr>
+                {% endfor %}
+            </tbody>
+        </table>    
+	</fieldset>
+	{% endif %}
+	
+	<fieldset class="module aligned">
+		<h2>Urlopówka</h2>
+		<div class="form-row">
+			{{ forms.render_field(c.holiday_form.driver) }}
+		</div>
+		<div class="form-row">
+			<div class="field-box">
+				{{ forms.render_field(c.holiday_form.from_date, class_="date-field") }}
+			</div>
+			<div class="field-box">
+				{{ forms.render_field(c.holiday_form.from_time, class_="time-field") }}
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="field-box">
+				{{ forms.render_field(c.holiday_form.to_date, class_="date-field") }}
+			</div>
+			<div class="field-box">
+				{{ forms.render_field(c.holiday_form.to_time, class_="time-field") }}
+			</div>
+		</div>		
+		<div class="form-row">
+			{{ forms.render_field(c.holiday_form.issue_date, class_="date-field") }}
+		</div>		
+	</fieldset>
+	
+	<div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">
+		{{ h.submit('Zapisz', name='action', value='add-holiday') }}									
+	</div>
+	
+</div>		
+{{ h.end_form() }}
+
+{% endblock %}
+
+{% block footer %}
+<script> 
+	$(function() {
+		$('.date-field').each(function(){
+			$(this).datepicker({
+				dateFormat: 'yy-mm-dd'
+			})			
+		})    
+		
+		$('.time-field').each(function() {
+			$(this).timepickr({
+				convention: 24,
+				trigger: 'focus' 
+			});			
+		})    
+	});
+</script>
+{%- endblock %}

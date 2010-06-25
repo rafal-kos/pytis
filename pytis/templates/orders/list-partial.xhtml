@@ -1,0 +1,91 @@
+{% macro buildrow(order, row) %}		    
+        <tr class="{{ row }} order-{{ order.id }}">                
+        <td>        	
+           {{ h.link_to(
+                order.number,
+                url(
+                    controller='orders',
+                    action='edit',					
+                    id=order.id
+                )                
+            ) }}
+			{% if h.auth.authorized(h.auth.is_admin) and order.places|length > 0 and order.created_at > order.places[0].date %}  
+				<img src="images/user_alert.png" />
+			{% endif %}         
+        </td>
+        <td>        	
+        	{{ h.link_to(
+                order.company.shortName,
+                url(
+                    controller='companies',
+                    action='edit',					
+                    id=order.company.id
+                )
+            ) }}                	
+		</td>
+        <td>
+        	{% if order.places|length > 0 %}
+				{{ order.places[-1].date }}
+			{% endif %}
+        </td>
+        <td>{{ order.freight }} {{ order.currency.value }} </td>
+        <td>
+                {% if order.transport_order is not none %}
+                        {{ order.transport_order.freight }} {{ order.transport_order.currency.value }} 
+                {% endif %}
+        </td>
+        <td>
+                {% if order.places|length > 1 %}
+                        {{ order.places[0].place.city }} - {{ order.places[-1].place.city }}
+                {% endif %}
+        </td>
+        <td>        		
+                {% if order.transport_order is not none %}
+                    {{ order.transport_order.company.shortName }}				
+                {% elif order.delegation is not none %}
+					DEL. {{ order.delegation.driver.full_name }}	
+				{% else %}
+                    ----
+                {% endif %}
+        </td>
+        <td>
+                {% if order.isFactured %}
+                        <p style="color: green">TAK</p>
+                {% else %}
+                        <p style="color: red">NIE</p>
+                {% endif %}
+        </td>  
+		
+		{% if h.auth.authorized(h.auth.is_admin)  %}
+			<td>{{ order.creator.full_name }}</td>
+		{% endif %}
+		      
+        </tr>
+{%- endmacro %}
+
+<p class="paginator">
+	{{ c.paginator.pager('~2~', onclick="$('#list-table').load('%s'); return false;")  }}	
+</p>
+<table id="item-list">
+	<thead>		
+	<tr>            
+		<th>Numer</th>
+        <th>Kontrahent</th>
+        <th>Data rozładunku</th>
+        <th>Fracht</th>
+        <th>Fracht przew.</th>
+        <th>Trasa</th>
+        <th>Przewoźnik</th>
+        <th>F</th>
+		{% if h.auth.authorized(h.auth.is_admin)  %}
+			<th>Utworzył</th>
+		{% endif %}	
+	</tr>	
+	</thead>
+	<tbody>       
+            {% for item in c.paginator %}
+                {{ buildrow(item, loop.cycle('row1', '')) }}
+            {% endfor %}
+	</tbody>		
+</table>
+<p class="paginator">{{ c.paginator.pager('~2~', onclick="$('#list-table').load('%s'); return false;")  }}</p>

@@ -1,0 +1,103 @@
+{% extends "/base/index.html" %}
+{% block title %}Nowy kontrahent{% endblock %}	
+
+{% block content %}
+<h1>Dodaj kontrahenta</h1>
+
+{{ h.form(url(controller="companies", action="add"), method='post') }}
+<div id="content-main">
+    <div>
+        <fieldset class="module aligned">
+            <div class="form-row">
+                <div>                	
+                    {{ c.form.name.label }}
+					{{ c.form.name(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.form.name) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.form.shortName.label }}
+					{{ c.form.shortName(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.form.shortName) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.form.address.label }}
+					{{ c.form.address(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.form.address) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.form.zip.label }}
+					{{ c.form.zip(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.form.zip) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.form.city.label }}
+					{{ c.form.city(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.form.city) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.form.regon.label }}
+					{{ c.form.regon(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.form.regon) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.form.nip.label }}
+					{{ c.form.nip(class_="vTextField") }}
+					
+					{{ forms.with_errors(c.form.nip) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.form.payment.label }}
+					{{ c.form.payment() }}
+					
+					{{ forms.with_errors(c.form.payment) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.form.paymentForm.label }}
+					{{ c.form.paymentForm() }}
+					
+					{{ forms.with_errors(c.form.paymentForm) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.form.tax.label }}
+					{{ c.form.tax() }}
+					
+					{{ forms.with_errors(c.form.tax) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    {{ c.form.description.label }}
+                    {{ c.form.description() }}
+                </div>
+            </div>
+        </fieldset>
+        <div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">    
+	        {{ h.submit('Zapisz') }}
+	    </div>
+{{ h.end_form() }}
+
+{% endblock %}

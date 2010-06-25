@@ -1,0 +1,85 @@
+{% extends "/base/index.html" %}
+{% block title %}Lista wartości słownikowych{% endblock %}
+
+{% macro buildrow(dictionary, row) %}
+        <tr class="{{ row }} dictionary-{{ dictionary.id }}">
+        <td>
+			{{ dictionary.category_name }}	
+        </td>
+        <td>
+           {{ h.link_to(
+                dictionary.key,
+                url(
+                    controller='dictionaries'|string,
+                    action='edit',
+                    id=dictionary.id|string
+                )
+            ) }}
+           
+        </td>
+        <td>{{ dictionary.value }}</td>        
+        <td>
+            {{ h.checkbox('enabled', checked=dictionary.enabled) }}
+        </td>
+        </tr>
+{%- endmacro %}
+
+{% block content %}
+
+{% block include %}
+	{{ h.javascript_link(url('/js/scripts/tools.js'), 
+						 url('/js/scripts/list.js'),
+						 url('/js/scripts/list.actions.js')
+						 ) }}		
+	<script type="text/javascript">
+	//<![CDATA[
+		var pytis_urls = { editRow: '/dictionaries/edit' };
+	//]]>
+</script>
+{% endblock %}
+
+<h1>Pola słownikowe</h1>
+<div id="content-main">
+	<div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">
+		{{ h.link_add('Dodaj nowy wpis', url(controller='dictionaries', action='add')) }}
+	</div>
+    
+    <div id="changelist" class="module filtered">
+        <div class="changelist-content">
+            <div class="result-list-container">
+                <div class="actions">
+                    <label>
+
+                    </label>
+                </div>
+                <div class="result-list" id="list-table">
+                    {% if c.paginator|length %}
+                        <p class="paginator">
+                                {{ c.paginator.pager('$link_first $link_previous $first_item do $last_item z $item_count $link_next $link_last') }}
+                        </p>
+                        <table id="item-list" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                	<th>Kategoria</th>
+                                    <th>Klucz</th>
+                                    <th>Wartość</th>
+                                    <th>Aktywny</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in c.paginator %}
+                                    {{ buildrow(item, loop.cycle('row1', 'row2')) }}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <p class="paginator">{{ c.paginator.pager('~2~') }}</p>
+                    {% else %}
+                        Brak wartości słownikowych
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

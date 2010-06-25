@@ -1,0 +1,40 @@
+{% macro buildrow(company, row) %}
+        <tr class="{{ row }} company-{{ company.id }}">
+            <td>
+               {{ h.link_to(
+                    company.name,
+                    url(
+                        controller='companies'|string,
+                        action='edit',
+                        id=company.id|string
+                    )
+                ) }}
+
+            </td>
+            <td>{{ company.shortName }}</td>
+            <td>{{ company.nip }}</td>
+            <td>{{ company.regon }}</td>
+            <td>{{ company.zip }}</td>
+            <td>{{ company.city }}</td>
+        </tr>
+{%- endmacro %}
+
+<p class="paginator">{{ c.paginator.pager('~2~', onclick="$('#list-table').load('%s'); return false;")  }}</p>
+<table id="item-list">
+    <thead>
+        <tr>
+            <th>Kontrahent</th>
+			<th>Akronim</th>
+			<th>NIP</th>
+			<th>REGON</th>
+			<th>Kod</th>
+			<th>Miasto</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in c.paginator %}
+            {{ buildrow(item, loop.cycle('row1', '')) }}
+        {% endfor %}
+    </tbody>
+</table>
+<p class="paginator">{{ c.paginator.pager('~2~', onclick="$('#list-table').load('%s'); return false;")  }}</p>

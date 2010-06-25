@@ -1,0 +1,161 @@
+{% extends "/base/index.html" %}
+{% block title %}Lista faktur{% endblock %}
+
+{% block include %}
+	{{ h.javascript_link(url('/js/scripts/tools.js'), 
+						 url('/js/scripts/list.js'),
+						 url('/js/scripts/list.actions.js'),
+						 url('/js/scripts/changelist.js')
+						 ) }}		
+	<script type="text/javascript">
+	//<![CDATA[
+		var pytis_urls = { editRow: '/invoices/edit' };
+	//]]>
+</script>
+{% endblock %}
+
+{% block content %}
+
+<div id="dialog" title="Wydruk rejestru sprzedaży">
+	<fieldset class="module aligned">
+	<div class="form-row">
+		<div>
+			<label for="yearField">Rok:</label>
+			{{ h.text("year", id="sellRegistryYear", value=c.year) }}
+		</div>
+	</div>	
+	<div class="form-row">
+		<div>
+			<label for="sellRegistryMonth">Miesiąc:</label>
+			{{ h.select("month", none, c.months, prompt="Wybierz...", id="sellRegistryMonth") }}		
+		</div>
+	</div>		
+	</fieldset>
+</div>
+
+<h1>Lista faktur</h1>
+
+<div id="content-main">
+	<div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">
+		{{ h.link_print('Rejestr sprzedaży', url(controller='', action=''), id='sellRegistry') }}
+	</div>
+    
+    <div id="changelist" class="module filtered">    	
+        <div class="changelist-content">
+        	<form method="POST">
+            <div class="result-list-container">
+                <div class="actions">
+                	
+                    <label>
+						{% include "/base/actions.xhtml" %}
+                    </label>					
+                </div>
+                <div class="result-list" id="list-table">
+                    {% if c.paginator|length %}
+                        {% include "/invoices/list-partial.xhtml" %}
+                    {% else %}
+                            <p>Brak kontrahentów</p>
+                    {% endif %}
+                </div>
+            </div>
+			</form>
+        </div>
+		
+        <div id="changelist-filter" class="float-left" style="border-right: 0px none;">
+            <div class="module search">
+                <h2>Szukaj</h2>
+                {{ h.form(url(controller='invoices', action='list'), id="changelist-search", method="get") }}
+                <div id="toolbar">
+                    <div class="form-row">
+                        <div>
+                            <label>Kontrahent:</label>
+                            <br />
+                            {{ h.text("company_name", id="nameField", value=request.GET.get('company_name', '')) }}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div>
+                            <label>Numer:</label>
+                            <br />
+                            {{ h.text("number", id="numberField", value=request.GET.get('number', '')) }}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div>
+                            <label>Od:</label>
+                            <br />
+							{{ h.text("invoiceDateFrom", id="invoiceDateFrom", value=request.GET.get('invoiceDateFrom', h.today(30))) }}                            
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div>
+                            <label>Do:</label>
+                            <br />
+                            {{ h.text("invoiceDateTo", id="invoiceDateTo", value=request.GET.get('invoiceDateTo', h.today())) }}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div>
+                            <label>Zafakturowana:</label>
+                            <br />
+                            {{ h.select("is_booked", request.GET.get('is_booked', None), [['0', 'NIE'|string], ['1', 'TAK'|string]], prompt="Wszystkie") }}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        {{ h.button_search('Szukaj') }}
+                    </div>
+                </div>
+                {{ h.end_form() }}
+            </div>
+        </div>
+    </div>	
+</div>
+
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('#invoiceDateFrom').datepicker({
+        dateFormat: 'yy-mm-dd'
+    });
+	
+    $('#invoiceDateTo').datepicker({
+        dateFormat: 'yy-mm-dd'
+    });
+	
+	var $dialog = $("#dialog").dialog({
+        bgiframe: true,
+        resizable: false,
+        autoOpen: false,
+        height:200,
+		width: 400,
+        modal: true,
+        overlay: {
+                backgroundColor: '#000',
+                opacity: 0.5
+        },
+        buttons: {
+            'Drukuj': function() {
+                    $(this).dialog('close');
+					var $month = $("#sellRegistryMonth").val();
+					var $year = $('#sellRegistryYear').val();
+										
+                    var $page = "{{ url(controller='invoices', action='print_sell_registry') }}" + '?year=' + $year + '&month=' + $month;					
+                    window.location.replace($page);
+            },
+            'Anuluj': function() {
+                    $(this).dialog('close');
+            }
+        }
+    });
+
+    $dialog.dialog('close');
+
+    $('#sellRegistry').click(function(){
+        $dialog.dialog('open');
+		return false;
+    });
+	    
+  });
+</script>
+
+{% endblock %}

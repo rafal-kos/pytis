@@ -1,0 +1,96 @@
+{% extends "/base/index.html" %}
+{% block title %}Nowa faktura{% endblock %}
+
+{% macro buildrow(invoice) %}    
+        <tr>    
+        <td valign="top">
+           {{ h.link_to(
+                invoice.number,
+                url(
+                    controller='invoices'|string,
+                    action='edit',
+                    id=invoice.id|string
+                )
+            ) }}           
+        </td>
+        <td valign="top">{{ invoice.company.shortName }}</td>
+		<td valign="top">{{ invoice.elements|length }}</td>               
+		<td valign="top">{{ invoice.date }}</td>        
+        <td valign="top">
+           {{ h.link_add(
+                'Dodaj'|string,
+                url(
+                    controller='invoices'|string,
+                    action='add_invoice_element',
+                    id=request.urlvars['id']|string,
+					idInvoice=invoice.id|string
+                )                
+            ) }}           
+        </td>
+        </tr>
+{%- endmacro %}
+
+{% block content %}
+
+<script type="text/javascript">
+	$(function() {
+		$("#tabs").tabs();
+	});
+</script>
+
+<div id="content-main">
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabs-1">Nowa faktura</a></li>
+            <li><a href="#tabs-2">Istniejące faktury</a></li>
+		</ul>
+
+        <div id="tabs-1">
+            {{ h.form(url(controller='invoices', action='add', id=request.urlvars['id']), method="post") }}
+            <fieldset class="module aligned">
+                <div class="form-row">
+                    <div>
+                        {{ c.form.year.label }}
+						{{ c.form.year() }}
+						
+						{{ forms.with_errors(c.form.year) }}
+                    </div>
+                </div>                
+                <div class="form-row">
+                    <div>
+                        {{ c.form.months.label }}
+						{{ c.form.months() }}
+						
+						{{ forms.with_errors(c.form.months) }}
+                    </div>
+                </div>                
+            </fieldset>
+            <div class="submit-row">
+                {{ h.submit('Zapisz') }}				
+            </div>
+            {{ h.end_form() }}
+        </div>
+
+        <div id="tabs-2">
+            {% if c.invoices|length %}
+                <table>
+                    <tr>
+                        <th>Numer</th>
+                        <th>Kontrahent</th>
+                        <th>Pozycje</th>
+                        <th>Data wystawienia</th>
+                        <th>Dodaj</th>
+                    </tr>
+                    {% for item in c.invoices %}
+                        {{ buildrow(item) }}
+                    {% endfor %}
+                </table>
+            {% else %}
+                <br />
+                <p>Brak faktur</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

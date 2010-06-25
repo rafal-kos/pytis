@@ -1,0 +1,65 @@
+{% extends "/base/index.html" %}
+{% block title %}Nowy użytkownik{% endblock %}
+
+{% block content %}
+
+<div id="content-main">
+    {{ h.form(url(controller='users', action='register'), method="post") }}
+    <fieldset class="module aligned">
+        <h2>Rejestracja nowego użytkownika</h2>
+    	<div class="form-row">
+        	<div>
+    			{{ c.form.login.label }}
+				{{ c.form.login(class_="vMediumTextField") }}
+				
+				{{ forms.with_errors(c.form.login) }}
+			</div>
+		</div>
+		<div class="form-row">
+        	<div>
+    			{{ c.form.email.label }}
+				{{ c.form.email(class_="vMediumTextField") }}
+				
+				{{ forms.with_errors(c.form.email) }}
+			</div>
+		</div>
+		<div class="form-row">
+        	<div>
+    			{{ c.form.first_name.label }}
+				{{ c.form.first_name(class_="vMediumTextField") }}
+				
+				{{ forms.with_errors(c.form.first_name) }}
+			</div>
+		</div>
+		<div class="form-row">
+        	<div>
+    			{{ c.form.last_name.label }}
+				{{ c.form.last_name(class_="vMediumTextField") }}
+				
+				{{ forms.with_errors(c.form.last_name) }}
+			</div>
+		</div>
+		<div class="form-row">
+        	<div>
+    			{{ c.form.password.label }}
+				{{ c.form.password(class_="vMediumTextField") }}
+				
+				{{ forms.with_errors(c.form.password) }}
+			</div>
+		</div>
+		<div class="form-row">
+        	<div>
+    			{{ c.form.password_confirm.label }}
+				{{ c.form.password_confirm(class_="vMediumTextField") }}
+				
+				{{ forms.with_errors(c.form.password_confirm) }}
+			</div>
+		</div>		
+    </fieldset>
+	<div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">    
+        {{ h.submit('Zapisz') }}
+    </div>
+    {{ h.end_form() }}
+</div>
+
+{% endblock %}

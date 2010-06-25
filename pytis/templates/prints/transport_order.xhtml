@@ -1,0 +1,104 @@
+{% extends "/prints/base.xhtml" %}
+
+{% block styles %}
+#table-summary {
+	border: 1px solid #000; 
+	border-collapse: collapse;
+}
+
+li {
+	font-size: 9px;		 
+}
+
+{%- endblock %}
+
+{% block content %}	
+	{{ page() }}	
+{%- endblock %}
+
+{% macro page() %}
+	{{ macros.head() }}
+
+	<h1 style="width: 100%; text-align: left; font-size: 1.6em;">Zlecenie transportowe nr {{ c.order.transport_order.number }}</h1>
+	<h1 style="width: 100%; text-align: left; font-size: 1.6em;">Wystawiono: {{ h.today() }}</h1>
+	<h1 style="width: 100%; text-align: left; font-size: 1.6em;">Zleceniobiorca:</h1>
+	<p style="width: 100%; border-top: 2px solid #ccc;">&nbsp;</p>	
+	<p>{{ c.order.transport_order.company.name }}</p>
+	<p>{{ c.order.transport_order.company.address }}</p>
+	<p>{{ c.order.transport_order.company.zip }} {{ c.order.transport_order.company.city }}</p>
+	<p>{{ c.order.transport_order.company.name }}</p>
+	<p>Kierowca: {{ c.order.transport_order.driverName }}</p>
+    <p>Ciągnik: {{ c.order.transport_order.tractorName }}</p>	
+	
+	<p style="width: 100%; text-align: left; font-size: 16px;">Trasa:</p>
+	<p style="width: 100%; border-top: 2px solid #ccc; line-height: 5px;">&nbsp;</p>
+	<table width="100%">
+	{% for place in c.order.places %}
+		<tr>
+			<td style="width: 1cm; font-size: 14px;">{{ loop.index }}</td>
+			<td style="width: 2cm; font-size: 14px;">
+				{% if place.type == 1 %}
+                	Załadunek
+            	{% else %}
+                	Rozładunek
+				{% endif %}
+			</td>
+			<td style="width: 11cm; font-size: 14px;">
+				{{ place.place.name }} {{ place.place.zip }} {{ place.place.city }} {{ place.place.street }}
+			</td>
+			<td style="width: 2cm; font-size: 14px;">
+				{{ place.date }}
+			</td>
+		</tr>
+	{% endfor %}
+	</table>
+	
+	<table width="100%" style="margin-bottom: 5px;">
+		<tr style="text-align: left; font-size: 16px; border-bottom: 2px solid #ccc;">
+			<td style="text-align: left; font-size: 16px;">
+				Stawka frachtowa:
+			</td>
+			<td style="text-align: right; font-size: 16px;">
+				{{ "%.2f"|format(c.order.transport_order.freight) }} {{ c.order.transport_order.currency.value }}
+			</td>
+		</tr>
+	</table>
+	
+	<p>Termin platnosci: {{ c.order.transport_order.company.paymentForm.value }} od daty wplyniecia faktury<p>
+	<p>Przy wystawianiu faktury prosimy powolac sie na nasz numer zlecenia: <b>{{ c.order.number }}</b></p>
+		
+	{% if c.order.transport_order.description %}
+		<h1 style="width: 100%; text-align: left; font-size: 16px;">Uwagi:</h1>
+		<p style="width: 100%; border-top: 2px solid #ccc; line-height: 5px;">&nbsp;</p>
+		<p style="font-size: 13px;"><b>{{ c.order.transport_order.description }}</b></p>        
+	{% endif %}
+
+	<h1 style="width: 100%; text-align: left; font-size: 16px;">Warunki realizacji zamówienia</h1>
+	<p style="width: 100%; border-top: 2px solid #ccc;">&nbsp;</p>
+	<ul style="margin-top: 2px;">
+		<li>termin dostarczenia faktury za zlecenie wraz z CMR to: 14 dni, po tym terminie zastrzegamy sobie prawo do obniżenia frachtu 50% wartości początkowej</li>
+		<li>bezwzglednie wymagana jest oryginalna pieczec i podpis z miejsca załadunku i rozładunku umieszczona na wszystkich stronach CMR, w przypadku braku którejkolwiek pieczeci lub podpisu ZASTRZEGAMY SOBIE PRAWO DO NIE WYPŁACENIA FRACHTU</li>
+		<li>bezwzględnie wymagane jest ubezpieczenie OC przewoźnika - w przypadku jego braku pełna odpowiedzialność ponosi zleceniobiorca</li>
+		<li>czas na załadunek i rozładunek do 48 godz. w każdym miejscu - wolny od opłat postojowych</li>
+		<li>brak odmowy w ciagu 1 godz. jest uważany za przyjęcie zlecenia do realizacji</li>
+		<li>stawka transportowa jest ostateczna i roszczenia z tytułu opłat nie będą uwzględniane</li>
+		<li>w razie niedotrzymania wymogów okreslonych w zleceniu wszelkimi kosztami wynikającymi z tego tytułu obciąża sie zleceniobiorcę</li>
+		<li>rekompensata za postój wypłacana tylko w przypadku zaakceptowania jej przez naszego zleceniodawce i wg jego stawek</li>
+		<li>kierowca odpowiada za zabezpieczenie ładunku oraz jest zobowiazany do dopilnowania zgodnosci towaru ze stanem w dokumentacji</li>
+		<li>obowiązuje neutralność wobec klienta w trakcie i po realizacji zlecenia, w przypadku podjecia bezpośrednich rozmów dotyczacych współpracy zastrzegamy sobie prawo do odszkodowania w wysokosci 30 000,00 EUR</li>
+		<li>cena frachtu ustalona według sredniego kursu NBP z dnia załadunku</li>
+		<li>oswiadczamy, że jestesmy płatnikiem VAT i wyrażamy zgode na wystawienie faktur bez naszego podpisu</li>
+		<li><b>miesiąc na fakturze musi się pokrywać z miesiącem wykonania usługi. Inne faktury nie będą księgowane.</b></li>
+	</ul>
+		
+	<h1 style="width: 100%; text-align: left; font-size: 16px;">Uwaga! Zmiana adresu korespondencji</h1>
+	<p style="width: 100%; border-top: 2px solid #ccc;">&nbsp;</p>
+	<p>ul. 1 Maja 1</p>
+	<p>39-200 Dębica</p>
+	
+	<div id="lowFooterContent">	
+        <hr style="width: 100%;" />
+		<p style="width: 100%; text-align: center; font-size: 10px;"><b>KONTO PLN BANK: PBS o/DEBICA nr: 30 8642 1139 2013 3914 7268 0001</b></p>
+		<p style="width: 100%; text-align: center; font-size: 10px;"><b>KONTO EUR BANK: PBS o/DEBICA nr: 03 8642 1139 2013 3914 7268 0002 KOD SWIFT: POLUPLPR</b></p>
+    </div>
+{%- endmacro %}

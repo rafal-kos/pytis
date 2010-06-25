@@ -1,0 +1,78 @@
+{% extends "/base/index.html" %}
+{% block title %}Lista delegacji{% endblock %}
+
+{% block include %}
+	{{ h.javascript_link(url('/js/scripts/tools.js'), 
+						 url('/js/scripts/list.js'),
+						 url('/js/scripts/list.actions.js')
+						 ) }}		
+	<script type="text/javascript">
+	//<![CDATA[
+		var pytis_urls = { editRow: '/delegations/edit' };
+	//]]>
+</script>
+{% endblock %}
+
+{% block content %}
+
+<h1>Lista delegacji</h1>
+<div id="content-main">	
+    
+    <div id="changelist" class="module filtered">
+        <div class="changelist-content">
+            <div class="result-list-container">
+                <div class="actions">
+                    <label>
+
+                    </label>
+                </div>
+                <div class="result-list" id="list-table">
+                    {% if c.paginator|length %}
+                        <p class="paginator">
+                            {{ c.paginator.pager('$link_first $link_previous $first_item do $last_item z $item_count $link_next $link_last') }}
+                        </p>
+                        <table id="item-list" >
+                            <thead>
+                            <tr>
+                                <th>Numer</th>
+								<th>Kierowca</th>
+								<th>Ciągnik</th>
+								<th>Naczepa</th>                  
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in c.paginator %}
+                                    {{ buildrow(item, loop.cycle('row1', '')) }}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <p class="paginator">{{ c.paginator.pager('~2~') }}</p>
+                    {% else %}
+
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% macro buildrow(delegation, row) %}
+    <tr class="{{ row }} delegation-{{ delegation.id }}">
+        <td>
+           {{ h.link_to(
+                delegation.number,
+                url(
+                    controller='delegations'|string,
+                    action='edit',
+                    id=delegation.id|string
+                )
+            ) }}
+        </td> 
+		<td>{{ delegation.driver.full_name }}</td>
+		<td>{{ delegation.truck.registration }}</td>
+		<td>{{ delegation.semitrailer.registration }}</td>       
+    </tr>
+{%- endmacro %}

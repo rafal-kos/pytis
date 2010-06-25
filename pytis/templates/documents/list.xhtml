@@ -1,0 +1,59 @@
+{% extends "/base/index.html" %}
+{% block title %}Serie dokumentów{% endblock %}
+
+{% block include %}
+	{{ h.javascript_link(url('/js/scripts/tools.js'), 
+						 url('/js/scripts/list.js'),
+						 url('/js/scripts/list.actions.js')
+						 ) }}			
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+	<h1>Serie dokumentów</h1>		
+	<div id="changelist" class="module filtered">
+        <div class="changelist-content">
+            <div class="result-list-container">
+                <div class="actions">
+                    
+                </div>
+                <div class="result-list" id="list-table">
+                    <p class="paginator">{{ c.paginator.pager('~2~') }}</p>
+					<table id="item-list" >
+						<thead>		
+						<tr>
+							<th>Nazwa</th>			
+							<th>Wzorzec</th>									
+						</tr>	
+						</thead>
+						<tbody>       
+						  	{% for item in c.paginator %}
+						    	{{ buildrow(item) }}	       
+					       	{% endfor %}
+						</tbody>		
+					</table>
+					<p class="paginator">{{ c.paginator.pager('~2~') }}</p>
+                </div>                
+            </div>
+        </div>
+	</div>	
+</div>	
+		
+{% endblock %}
+
+{% macro buildrow(document) %}    
+        <tr>    
+        <td valign="top">
+           {{ h.link_to(
+                document.name,
+                url(
+                    controller='documents'|string,
+                    action='edit',
+                    id=document.id|string
+                )
+            ) }}
+           
+        </td>                
+        <td valign="top">{{ document.pattern }}</td>
+        </tr>
+{%- endmacro %}

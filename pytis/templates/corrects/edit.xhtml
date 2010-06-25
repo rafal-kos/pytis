@@ -1,0 +1,213 @@
+{% extends "/base/index.html" %}
+{% block title %}Korekta faktury{% endblock %}
+
+{% block include %}
+	{{ h.javascript_link(url('/js/scripts/tools.js'),
+						 url('/js/scripts/invoice_position.js'),
+						 url('/js/tinymce/tiny_mce.js')) }}
+{% endblock %}
+
+{% block content %}
+
+<div id="content-main">
+	{{ h.form(url(controller='corrects', action='edit', id=request.urlvars['id']), method="post") }}
+	<fieldset class="module aligned">
+		<h2>Korekta faktury</h2>
+		<div class="form-row">
+        	{{ c.form.id() }}
+        	{{ c.form.number.label }}
+			{{ c.form.number(value=c.correct.number, class_="important vTextField", readonly="enabled") }}					
+        </div>
+		<div class="form-row">
+            <div>
+            	<label>Kontrahent:</label>
+            	{{ h.text('company', value=c.correct.company.name, class_="vTextField", readonly="enabled") }}            	                     							
+            </div>
+        </div>		
+        <div class="form-row">
+            <div class="field-box">
+            	{{ c.form.correct_date.label }}
+				{{ c.form.correct_date() }}
+				
+				{{ forms.with_errors(c.form.correct_date) }}                
+            </div>
+			<div class="field-box">
+				{{ c.form.sell_date.label }}
+				{{ c.form.sell_date() }}
+				
+				{{ forms.with_errors(c.form.sell_date) }}
+			</div>
+        </div>
+		<div class="form-row">
+            <div class="field-box">            	
+                {{ c.form.payment_date.label }}
+				{{ c.form.payment_date() }}
+				
+				{{ forms.with_errors(c.form.payment_date) }}            	    
+            </div>
+			<div class="field-box">
+				{{ c.form.payment_form.label }}
+				{{ c.form.payment_form(class_="vTextField") }}
+				
+				{{ forms.with_errors(c.form.payment_form) }}
+			</div>
+			<div class="field-box">			
+				<label>Waluta:</label> 
+				<b>{{ c.correct.currency.value }}</b>						
+			</div>
+        </div>
+	</fieldset>
+	
+	<fieldset class="module aligned">
+		<h2><b>Po korekcie</b></h2>
+		<table cellpadding="10">
+			<thead>
+                <tr>
+                    <th class="lp" style="width: 10px;">Lp.</th>
+                    <th style="width: 20px;">Numer</th>                    
+                    <th style="width: 120px;">Fracht</th>
+					<th style="width: 120px;">Stawka</th>				                    
+                    <th style="width: 70px;">VAT</th>
+                    <th style="width: 120px;">Wartość brutto</th>
+					<th style="width: 120px;"></th>                    
+                </tr>
+            </thead>
+            <tbody>
+            	{% for position in c.form.positions %}
+					{{ buildrow(position, loop.index, loop.cycle('row1', 'row2')) }}
+				{% endfor %}
+            </tbody>
+    	</table>		
+	</fieldset>
+	
+	<fieldset class="module aligned">
+		<h2><b>Przed korektą</b></h2>
+		<table cellpadding="10">
+			<thead>
+                <tr>
+                    <th class="lp" style="width: 10px;">Lp.</th>
+                    <th style="width: 20px;">Numer</th>                    
+                    <th style="width: 120px;">Fracht</th>
+					<th style="width: 120px;">Stawka</th>				                    
+                    <th style="width: 70px;">VAT</th>
+                    <th style="width: 120px;">Wartość brutto</th>					                    
+                </tr>
+            </thead>
+            <tbody>
+            	{% for position in c.correct.positions %}
+					{{ buildrow_original_position(position.original_position, loop.index, loop.cycle('row1', 'row2')) }}
+				{% endfor %}
+            </tbody>
+    	</table>
+	</fieldset>
+	
+	<fieldset class="module aligned">
+		<h2>Podsumowanie i różnica</h2>		
+		<table >
+			<thead>
+				<th style="width: 80px;">Netto</th>
+				<th style="width: 80px;">VAT</th>
+				<th style="width: 80px;">Brutto</th>
+			</thead>
+			<tbody>
+				<td class="right">{{ "%.2f"|format(c.correct.netto_value - c.correct.invoice.value) }}</td>
+				<td class="right">{{ "%.2f"|format(c.correct.tax_value - c.correct.invoice.tax_value) }}</td>
+				<td class="right">{{ "%.2f"|format(c.correct.brutto_value - c.correct.invoice.brutto_value) }}</td>
+			</tbody>
+		</table>		
+	</fieldset>
+	
+	<fieldset class="module aligned">
+		<div class="form-row">
+			<div>
+				{{ c.form.description.label }}
+				{{ c.form.description(class_="vTextField") }}
+				
+				{{ forms.with_errors(c.form.description) }}				
+				<p class="help">
+					Dodatkowe informacje widoczne na korekcie faktury (maks. 320 znaków)  
+				</p>		
+			</div>
+		</div>
+		
+	</fieldset>	
+	
+	<div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">
+		{{ h.submit('Zapisz') }}
+		{{ h.link_print('Drukuj', url(controller="corrects", action="print_correct", id=c.correct.id)) }}		
+	</div>
+							
+	{{ h.end_form() }}
+</div>
+
+{% endblock %}
+
+{% block footer %}
+<script>	
+	$(document).ready(function(){
+		$('#sell_date').datepicker({
+			dateFormat: 'yy-mm-dd'
+		});    
+		
+		$('#correct_date').datepicker({
+			dateFormat: 'yy-mm-dd'
+		});
+		
+		$('#payment_date').datepicker({
+			dateFormat: 'yy-mm-dd'
+		});  	  			
+		
+		$('tr.position-row').each(function(){
+			$row = new InvoicePosition($(this));
+		});
+	});
+	
+	tinyMCE.init({
+		mode : "textareas",
+		theme : "simple"
+	});	
+</script>
+{% endblock %}
+
+{% macro buildrow_original_position(position, index, row) %}
+	<tr class="{{ row }} original-row">
+		<td> {{ index }} </td>
+		<td> {{ position.order.number }} </td>
+		<td class="right"> {{ "%.2f"|format(position.value|round(2)) }} </td>
+		<td class="right"> {{ position.tax.name }} </td>
+		<td class="right"> <span class="tax_value">{{ "%.2f"|format(position.tax_value|round(2)) }}</span> </td>
+		<td class="right"> {{ "%.2f"|format(position.brutto_value|round(2)) }} </td>
+	</tr>
+		
+{%- endmacro %}
+
+{% macro buildrow(position, index, row) %}
+    <tr class="{{ row }} position-row" id="{{ c.correct.positions[index - 1].id }}">
+        <td>
+			{{ index }}					
+			{{ position.position_id() }}
+        </td>
+        <td>
+			{{ c.correct.positions[index - 1].original_position.order.number }}
+        </td>
+        <td>
+			{{ position.netto_value(class_="netto_value currency") }}			
+			{{ forms.with_errors(position.netto_value) }} 
+        </td>
+		<td>
+			{{ position.tax(class_="tax_type") }}
+			{{ forms.with_errors(position.tax) }}
+		</td>
+        <td class="right">     
+			{{ position.tax_value(class_="tax_value currency", readonly="enabled") }}
+			{{ forms.with_errors(position.tax_value) }}			
+        </td>
+		<td>
+			{{ position.brutto_value(class_="brutto_value currency") }}
+			{{ forms.with_errors(position.brutto_value) }}
+		</td>        
+		<td>
+			{{ h.link_delete('Usuń', '#', id="delete") }}
+		</td>
+    </tr>
+{%- endmacro %}

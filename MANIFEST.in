@@ -1,0 +1,3 @@
+include pytis/config/deployment.ini_tmpl
+recursive-include pytis/public *
+recursive-include pytis/templates *

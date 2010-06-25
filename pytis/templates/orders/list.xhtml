@@ -1,0 +1,103 @@
+{% extends "/base/index.html" %}
+{% block title %}Lista zleceń{% endblock %}
+
+{% block footer %}
+	{{ h.javascript_link(url('/js/scripts/tools.js'), 
+						 url('/js/scripts/list.js'),
+						 url('/js/scripts/list.actions.js')
+						 ) }}		
+	<script type="text/javascript">
+	//<![CDATA[
+		var pytis_urls = { editRow: '/orders/edit' };
+	//]]>
+</script>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+	<h1>Lista zleceń</h1>
+	<div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">
+		{{ h.link_add('Nowe zlecenie', url(controller='orders', action='add')) }}		
+	</div>
+    
+    <div id="changelist" class="module filtered">
+        <div class="changelist-content">
+            <div class="result-list-container">
+                <div class="actions">
+                    
+                </div>
+                <div class="result-list" id="list-table">
+                    {% if c.paginator|length %}
+                        {% include "/orders/list-partial.xhtml" with context %}
+                    {% else %}
+                            <p>Brak zleceń</p>
+                    {% endif %}
+                </div>                
+            </div>
+        </div>
+        <div id="changelist-filter" class="float-left" style="border-right: 0px none;">
+            <div class="module search">
+                <h2>Szukaj</h2>
+                <div id="toolbar">
+                {{ h.form(url(controller='orders', action='list'), id="changelist-search", method="get") }}
+                    <div>
+                        <div class="form-row">
+                            <label>Numer:</label>
+                            <br />
+                            {{ h.text("number", id="numberField") }}
+                        </div>
+                        <div class="form-row">
+                            <label>Kontrahent:</label>
+                            <br />
+                            {{ h.text("company_name", id="nameField", value=request.GET.get('company_name', '')) }}
+                        </div>
+                        <div class="form-row">
+                            <label>Od:</label>
+                            <br />
+							{{ h.text("orderDateFrom", id="orderDateFrom", value= request.GET.get('orderDateFrom', h.today(30))) }}                            
+                        </div>
+                        <div class="form-row">
+                            <label>Do:</label>
+                            <br />							
+							{{ h.text("orderDateTo", id="orderDateTo", value= request.GET.get('orderDateTo', h.today())) }}                            
+                        </div>
+                        <div class="form-row">
+                            <label>ZT:</label>
+                            <br />
+                            {{ h.text("numberTransportOrder", id="numberTransportOrderField", value= request.GET.get('numberTransportOrder', '')) }}
+                        </div>
+                        <div class="form-row">
+                            <label>Autor:</label>
+                            <br />
+                            {{ h.select("idCreator", request.GET.get('idCreator', None), c.user, prompt="Wszystkie") }}							
+                        </div>
+						<div class="form-row">
+                            <label>Zafakturowanie:</label>
+                            <br />
+                            {{ h.select("is_factured", request.GET.get('is_factured', None), [['0', 'NIE'|string], ['1', 'TAK'|string]], prompt="Wszystkie") }}
+                        </div>						
+                        <div class="form-row">
+                            {{ h.button_search('Szukaj') }}
+                        </div>
+                    </div>
+                {{ h.end_form() }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('#orderDateFrom').datepicker();
+    $('#orderDateFrom').datepicker('option', {dateFormat: 'yy-mm-dd'});
+	
+    $('#orderDateTo').datepicker();
+    $('#orderDateTo').datepicker('option', {dateFormat: 'yy-mm-dd'});	    
+  });
+</script>
+
+{% endblock %}
+
+{% macro test() %}
+	<div>TEST</div>
+{%- endmacro %}

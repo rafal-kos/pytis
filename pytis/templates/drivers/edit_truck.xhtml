@@ -1,0 +1,59 @@
+{% extends "/base/index.html" %}
+{% block title %}Edycja kierowcy{% endblock %}	
+
+{% block content %}
+{{ h.form(url(controller='drivers', action='edit_truck', id=request.urlvars['id']), method="post") }}
+<div id="content-main">
+	<fieldset class="module aligned">
+		<div class="form-row">			
+			{{ forms.render_field(c.form.registration, class_="vMediumTextField") }}						
+		</div>
+		<div class="form-row">			
+			{{ forms.render_field(c.form.is_active) }}						
+		</div>	
+		<div class="form-row">
+			{{ forms.render_field(c.form.oc_validity_date, class="date-field") }}
+		</div>
+		<div class="form-row">
+			{{ forms.render_field(c.form.ac_validity_date, class="date-field") }}
+		</div>
+		<div class="form-row">
+			{{ forms.render_field(c.form.technical_review_validity_date, class_="date-field") }}
+		</div>
+		<div class="form-row">
+			{{ forms.render_field(c.form.vin_number, class_="vMediumTextField") }}
+		</div>		
+		<div class="form-row">
+			{{ forms.render_field(c.form.vignette_validity_date, class_="date-field") }}
+		</div>
+		<div class="form-row">
+			{{ forms.render_field(c.form.euro_norm) }}
+		</div>		
+		<div class="form-row">
+			{{ forms.render_field(c.form.model) }}
+		</div>		
+		<div class="form-row">
+			{{ forms.render_field(c.form.year_of_production) }}
+		</div>
+	</fieldset>
+	
+	<div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">
+		{{ h.submit('Zapisz') }}									
+	</div>
+	
+</div>		
+{{ h.end_form() }}
+
+{% endblock %}
+
+{% block footer %}
+<script> 
+	$(function() {
+		$('.date-field').each(function(){
+			$(this).datepicker({
+				dateFormat: 'yy-mm-dd'
+			})
+		})        
+	});
+</script>
+{%- endblock %}

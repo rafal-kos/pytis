@@ -1,0 +1,241 @@
+{% import '/prints/macros.xhtml' as macros %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+<style>
+@page {
+    margin: 1cm;
+    margin-bottom: 2cm;
+    margin-top: 2cm;
+    size: a4 portrait;    
+    @frame footer {
+        -pdf-frame-content: footerContent;
+        bottom: 0cm;
+        margin-left: 0.5cm;
+        margin-right: 0.5cm;
+        height: 3cm; 
+    }
+	
+	@frame low-footer {
+		-pdf-frame-content: lowFooterContent;
+        bottom: 0cm;
+        margin-left: 0.5cm;
+        margin-right: 0.5cm;
+        height: 1.5cm;
+	}
+	
+    @frame simple {
+        -pdf-frame-content: simple;
+        
+        height: 2.5cm;
+        margin-left: 1cm;
+        margin-right: 1cm;
+    }
+}
+
+@font-face {
+  font-family: ayuma;
+  src: url(/Arial.ttf);
+} 
+
+@font-face {
+  font-family: ayuma;
+  src: url(/Arial_Bold.ttf);
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: ayuma;
+  src: url(/Arial_Italic.ttf);
+  font-family: italic;
+}
+
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre, hr
+a, abbr, acronym, address, code,
+del, dfn, em, img, q, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-weight: inherit;
+  font-style: inherit;
+  font-size: 12px;
+  font-family: inherit;
+  vertical-align: baseline;
+}
+
+body { 
+   
+}
+
+
+table { border-collapse: separate; border-spacing: 0; }
+caption, th, td { text-align: left; font-weight: normal; }
+table, td, th { vertical-align: middle; }
+
+blockquote:before, blockquote:after, q:before, q:after { content: ""; }
+blockquote, q { quotes: "" ""; }
+
+a img { border: none; }
+
+html {
+     font-family: ayuma;
+	 line-height: 2em;	    
+}  
+
+div#client-details{
+    font-size: 120%;
+}
+
+div#specification{
+    
+}
+
+div#specification td{
+    vertical-align: middle;
+    padding-top: 2px;
+    padding-bottom: 1px;
+	padding-right: 1px;
+	border: 1px solid #000;
+	border-collapse: collapse;
+	font-size: 9px;
+}
+
+table td {
+    vertical-align: top;
+    padding: 1px 0;    
+}
+
+table td.amount{
+    text-align: right;
+    padding-right: 2px;
+}
+
+table td.total{
+    padding-top: 5px;
+}
+
+table th {
+	padding-top: 1px;
+    text-align: center;    
+	border: 1px solid #000;
+	border-collapse: collapse;
+}
+
+tr.uneven {
+    background-color: #efefef;
+}
+
+div#footerContent, div#lowFooterContent {
+    color: #777777;
+}
+
+div#footerContent a, div#lowFooterContent a {
+    color: #790000;
+    text-decoration: none;
+}
+
+.date {
+    font-size: 90%;
+    color: #777;
+}
+
+div#totals {
+    margin: 20px 0;
+}
+
+div#simple td {
+    margin-left: 10px;
+    background-color: #efefef;
+}
+
+div#simple tr {
+    border-right: 1px solid #333;
+}
+
+div#simple table{
+    text-align: center;
+    border-left: 1px solid #999;
+}
+
+h1 {
+	font-size: 18px;
+}
+
+ul.small li {
+	font-size: 80%;
+}
+
+</style>
+</head>
+<body>	
+	<h1 style="text-align: center;">ZAŚWIADCZENIE O DZIAŁALNOŚCI<sup>(1)</sup></h1>
+	<h2 style="text-align: center;">(ROZPORZĄDZENIE (WE) NR 561/2006 LUB AETR<sup>(2)</sup></h2>
+	<h3 style="text-align: center;">
+		<i>
+		Należy wypełnić na komputerze lub maszynowo i podpisać przed rozpoczęciem podróży.<br />
+		Należy przechowywać wraz z oryginalnymi zapisami urządzeń kontrolnych zgodnie z odpowiednimi wymogami
+		</i>
+	</h3>	
+	<h3 style="text-align: center;">
+		Sfałszowanie świadectwa stanowi naruszenie przepisów
+	</h3>
+	
+	<p><b>Część wypełniana przez przedsiębiorstwo</b></p>
+	<ul style="list-style-type:  none;">
+		<li>1. Nazwa przedsiębiorstwa: {{ c.config.companyName }}</li>
+		<li>2. Ulica i numer, kod pocztowy, miejscowość, państwo: {{ c.config.companyStreet }} {{ c.config.companyZip }} {{ c.config.companyCity }} Polska</li>
+		<li>3. Numer telefonu (w tym międzynarodowy numer kierunkowy): +48 {{ c.config.companyTelFax }}</li>
+		<li>4. Numer faksu (w tym międzynarodowy numer kierunkowy): +48 {{ c.config.companyTelFax }}</li>
+		<li>5. Adres e-mail: {{ c.config.company_email }}</li>		
+	</ul>
+	<p><b>Ja, niżej podpisany:</b></p>
+	<ul style="list-style-type:  none;">
+		<li>6. Imię i nazwisko: {{ c.user.full_name }}</li>
+		<li>7. Stanowisko w przedsiębiorstwie: dyspozytor</li>
+	</ul> 
+	<p><b>oświadczam, że kierowca:</b></p>
+	<ul style="list-style-type:  none;">
+		<li>8.  Imię i nazwisko: {{ c.holiday.driver.first_name }} {{ c.holiday.driver.last_name }}</li>
+		<li>9.  Data urodzenia (dzień-miesiąc-rok): {{ c.holiday.driver.birthday_date }}</li>
+		<li>10. Numer prawa jazdy lub dowody osobistego, lub paszportu: {{ c.holiday.driver.identity_card_number }}</li>
+		<li>11. który rozpoczął pracę w przedsiębiorstwie dnia (dzień-miesiąc-rok): {{ c.holiday.driver.employment_date }}</li>
+	</ul>
+	<p><b>w okresie:</b></p>
+	<ul style="list-style-type:  none;">
+		<li>12. od (godzina-dzień-miesiąc-rok): {{ c.holiday.from_time|string()|truncate(length=5, killwords=True, end='') }} {{ c.holiday.from_date }}</li>
+		<li>13. do (godzina-dzień-miesiąc-rok): {{ c.holiday.to_time|string()|truncate(length=5, killwords=True, end='') }} {{ c.holiday.to_date }}</li>
+		<li>14. przebywał na zwolnieniu chorobowym(*)</li>
+		<li>15. przebywał na urlopie wypoczynkowym(*)</li>
+		<li>16. przebywał na urlopie lub odpoczywał w ramach dziennego okresu odpoczynku(*)</li>
+		<li>17. prowadził pojazd wyłączony z zakresu stosowania rozporządzenia (WE) nr 561/2006 lub AETR(*)</li>
+		<li>18. wykonywał pracę inną niż prowadzenie pojazdu(*)</li>
+		<li>19. był dostępny(*)</li>
+		<li>20 Miejscowość: &nbsp;&nbsp;&nbsp;&nbsp; {{ c.config.companyCity }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+		Data: {{ c.holiday.issue_date }}</li>
+	</ul>		
+	<p>Podpis......................................................</p>
+	<ul style="list-style-type:  none;">
+		<li>21. Ja, jako kierowca, potwierdzam, że w wyżej wymienionym okresie nie 
+		prowadziłem pojazdu wchodzącego w zakres stosowania rozporządzenia (WE) nr 561/2006 lub AETR.
+		</li>
+		<li>22. Miejscowość: &nbsp;&nbsp;&nbsp;&nbsp; {{ c.config.companyCity }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		 Data: {{ c.holiday.issue_date }}</li>
+	</ul>
+	<p>Podpis kierowcy......................................................</p>
+	
+	<br />
+	<br />
+	
+	<ul style="list-style-type:  none;" class="small">
+		<li>(1) Niniejszy formularz jest dostępny w formie elektronicznej i przeznaczonej do druku na stronie internetowej: http://ec.europa.eu </li>
+		<li>(2) Umowa europejska dotycząca pracy załóg pojazdów wykonujących międzynarodowe przewozy drogowe.</li>
+		<li>(*) można wybrać tylko jedną z rubryk</li>
+	</ul>	
+</body>
+</html>
+ 

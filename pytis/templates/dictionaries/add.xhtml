@@ -1,0 +1,53 @@
+{% extends "/base/index.html" %}
+{% block title %}Dodanie nowego pola{% endblock %}	
+
+{% block content %}
+
+<div id="content-main">
+    {{ h.form(url(controller='dictionaries', action='add'), method="post") }}
+    <fieldset class="module aligned">
+        <h2>Dodanie nowego pola</h2>
+    	<div class="form-row">
+        	<div>
+    			{{ c.form.key.label }}
+				{{ c.form.key() }}
+				
+				{% if c.form.key.errors %}
+			        <ul class="errorlist">
+			        	{% for error in c.form.key.errors %}<li>{{ error }}</li>{% endfor %}
+					</ul>
+			    {% endif %}
+			</div>
+		</div>
+		<div class="form-row">
+        	<div>
+        		{{ c.form.value.label }}
+				{{ c.form.value() }}
+				
+				{% if c.form.value.errors %}
+			        <ul class="errorlist">
+			        	{% for error in c.form.value.errors %}<li>{{ error }}</li>{% endfor %}
+					</ul>
+			    {% endif %}
+        	</div>
+		</div>
+		<div class="form-row">
+        	<div>
+        		{{ c.form.kind.label }}
+				{{ c.form.kind() }}
+        	</div>
+		</div>
+		<div class="form-row">
+        	<div>
+        		{{ c.form.enabled.label }}
+				{{ c.form.enabled() }}
+        	</div>
+		</div>		        
+    </fieldset>
+	<div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">    
+        {{ h.submit('Zapisz') }}
+    </div>
+    {{ h.end_form() }}
+</div>
+
+{% endblock %}

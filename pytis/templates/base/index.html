@@ -1,0 +1,180 @@
+{% import '/base/macros.xhtml' as forms with context %}
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>	    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+	<link rel="icon" type="image/png" href="/favicon.png">
+    {% block head %}
+        <title>PyTiS - {% block title %}{% endblock %}</title>
+    {% endblock %}
+    
+    {{ h.stylesheet_link(url('/css/reset.css'),
+						 url('/css/typography.css'),
+						 url('/css/modules.css'),
+						 url('/css/tables.css'),
+						 url('/css/forms.css'),
+						 url('/css/widgets.css'),
+						 url('/css/common.css'),
+						 url('/css/webkit-gradients.css'),
+						 url('/css/base.css'),						 
+						 url('/css/buttons/buttons.css'),
+						 url('/css/login.css'),
+						 url('/css/changelist.css'),
+						 url('/css/jquery.autocomplete.css'),						 
+						 minified=True,
+                       	 combined=True
+						 ) }}	
+	{{ h.stylesheet_link(url('/ui/jquery-ui-1.7.2.custom.css')) }}
+	
+    {{ h.javascript_link('http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js',
+						 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js',
+						 'http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js',						 				 						 
+						 url('/jquery/i18n/ui.datepicker-pl.js'),
+						 url('/jquery/jquery.autocomplete.pack.js'),
+						 url('/jquery/jquery.blockUI.js'),
+						 url('/jquery/jquery.form.js'),						 
+						 url('/js/scripts/Menu.js')						 
+						 ) }}							   
+	
+	{% block include %}
+	{% endblock %}	
+	{# 
+		url('/jquery/jquery-1.3.2.min.js'),
+		url('/jquery/jquery-ui-1.7.2.custom.min.js'), 
+	#}
+</head>
+<body class="change-list">	
+	<div style="z-index: 4000; position: absolute; margin-left: 50%; margin-top: 20em; display: none;" id="loading">
+        <img src="/images/spinner.gif"/>
+    </div>		
+	
+    <div id="container">
+        <div id="header">
+            <div class="admin-title">PyTiS v1.0.2</div>
+            <ul id="bookmarks">
+                <li class="enabled" id="toggle-bookmarks-listing"><a href="javascript://">Kontrahenci</a>
+                    <ul id="bookmarks-listing" style="display: none;">
+                        <li>
+                            <a class="new" href="{{ url(controller='companies', action='add') }}"><strong>Nowy kontrahent</strong></a>
+                        </li>
+                        <li>
+                            <a class="companies" href="{{ url(controller='companies', action='list') }}"><strong>Lista kontrahentów</strong></a>
+                        </li>						
+                    </ul>
+                </li>
+                <li class="enabled" id="toggle-bookmarks-listing"><a href="javascript://">Zlecenia</a>
+                    <ul id="bookmarks-listing" style="display: none;">
+                        <li>
+                            <a class="new" href="{{ url(controller='orders', action='add') }}"><strong>Nowe zlecenie</strong></a>
+                        </li>
+                        <li>
+                            <a class="orders" href="{{ url(controller='orders', action='list') }}"><strong>Lista zleceń</strong></a>
+                        </li>						
+                    </ul>
+                </li>
+				<li class="enabled" id="toggle-bookmarks-listing"><a href="javascript://">Delegacje</a>
+					<ul id="bookmarks-listing" style="display: none;">
+                        <li>
+                            <a class="delegations" href="{{ url(controller='delegations', action='list') }}"><strong>Lista delegacji</strong></a>
+                        </li>
+						<li>
+                            <a class="drivers" href="{{ url(controller='drivers', action='list') }}"><strong>Kierowcy / Ciągniki / Naczepy</strong></a>
+                        </li>
+                    </ul>
+				</li>
+                <li class="enabled" id="toggle-bookmarks-listing"><a href="javascript://">Faktury</a>
+                    <ul id="bookmarks-listing" style="display: none;">
+                        <li>                        	
+                            <a class="invoices" href="{{ url(controller='invoices', action='list') }}"><strong>Faktury VAT</strong></a>
+							<a class="corrects" href="{{ url(controller='corrects', action='list') }}"><strong>Korekty</strong></a>
+                        </li>                        
+                    </ul>
+                </li>
+                <li class="enabled" id="toggle-bookmarks-listing"><a href="javascript://">Administracja</a>
+                    <ul id="bookmarks-listing" style="display: none;">
+                        <li>
+                            <a class="users" href="{{ url(controller='users', action='list') }}"><strong>Użytkownicy</strong></a>
+                        </li>
+						{% if h.auth.is_admin %}
+							<li>
+	                            <a class="settings" href="{{ url(controller='settings', action='list') }}"><strong>Ustawienia</strong></a>
+	                        </li>
+	                        <li>
+	                            <a href="{{ url(controller='dictionaries', action='list') }}"><strong>Słowniki</strong></a>
+	                        </li>
+							<li>
+	                            <a href="{{ url(controller='groups', action='list') }}"><strong>Grupy</strong></a>
+	                        </li>
+							<li>
+	                            <a href="{{ url(controller='documents', action='list') }}"><strong>Serie dokumentów</strong></a>
+	                        </li>
+						{% endif %}
+                    </ul>
+                </li>
+            </ul>
+            <ul id="user-tools">
+                {% if h.auth.is_valid_user %}
+                	<li><strong>{{ h.auth.user_login() }}</strong></li>
+                {% endif %}
+                <li>
+                    <a href="{{ url(controller='users', action='password_change') }}">Zmiana hasła</a>
+                </li>
+                <li>
+                    <a href="/users/logout">Wyloguj</a>
+                </li>
+            </ul>
+        </div>
+		
+		<div class="breadcrumbs">
+			{{ h.form(url(controller='orders', action='list'), method="get") }}
+			<label>Numer zlecenia</label>
+			{{ h.text("number", id="numberField", value="Z/" + h.now().year|string + "/") }}
+			<label>Nazwa kontrahenta</label>
+			{{ h.text("company_name", id="nameField") }}		
+			{{ h.button_search('Szukaj') }}
+			
+			{{ h.end_form() }}
+		</div>
+		
+        <ul class="messagelist">            
+        {% for message in h.flash.pop_messages() %}
+            <li>
+            	{{ message }}
+				<a class="close" href="#">
+					<img alt="close" title="Zamknij" src="/images/cross.png"/>
+				</a>  
+			</li>			
+        {% endfor %}
+        </ul>
+        <div id="content" class="flex">        	        	
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+{% block footer %}
+{% endblock %}          
+
+<!--
+<iframe id='debug'></iframe>
+<script>
+function check()
+{
+    // get the view ids
+    var req = new XMLHttpRequest();
+    req.open('GET', '/_debug/summary', false);
+    req.send(null);
+    if (req.status == 200)
+    {
+        var summary = eval(req.responseText);
+        if (summary.length > 0)
+        {
+			document.getElementById('debug').setAttribute('src', summary[0]['uri']);
+        }
+    }
+};
+check();
+</script>
+-->	  
+</body>
+</html>

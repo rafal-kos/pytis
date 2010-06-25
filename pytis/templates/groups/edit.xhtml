@@ -1,0 +1,30 @@
+{% extends "/base/index.html" %}
+{% block title %}Edycja grupy{% endblock %}	
+
+{% block content %}
+
+<div id="content-main">	
+	{{ h.secure_form(url(controller='groups', action='edit', id=request.urlvars['id']), method="post") }}
+    <fieldset class="module aligned">
+        <h2>Nowa grupa</h2>
+    	<div class="form-row">
+        	<div>
+        		{{ c.form.id() }}
+        		{{ c.form.name.label }}
+				{{ c.form.name(class_="vTextField") }}    			
+				
+				{% if c.form.name.errors %}
+			        <ul class="errorlist">
+			        	{% for error in c.form.name.errors %}<li>{{ error }}</li>{% endfor %}
+					</ul>
+			    {% endif %}
+			</div>
+		</div>				        
+    </fieldset>
+	<div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">    
+        {{ h.submit('Zapisz') }}
+    </div>
+    {{ h.end_form() }} 
+</div>
+
+{% endblock %}

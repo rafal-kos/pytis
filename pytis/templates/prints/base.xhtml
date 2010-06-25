@@ -1,0 +1,172 @@
+{% import '/prints/macros.xhtml' as macros %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+<style>
+@page {
+    margin: 1cm;
+    margin-bottom: 0cm;
+    margin-top: 0cm;
+    size: a4 portrait;    
+    @frame footer {
+        -pdf-frame-content: footerContent;
+        bottom: 0cm;
+        margin-left: 0.5cm;
+        margin-right: 0.5cm;
+        height: 3cm; 
+    }
+	
+	@frame low-footer {
+		-pdf-frame-content: lowFooterContent;
+        bottom: 0cm;
+        margin-left: 0.5cm;
+        margin-right: 0.5cm;
+        height: 1.5cm;
+	}
+	
+    @frame simple {
+        -pdf-frame-content: simple;
+        
+        height: 2.5cm;
+        margin-left: 1cm;
+        margin-right: 1cm;
+    }
+}
+
+@font-face {
+  font-family: ayuma;
+  src: url(/Arial.ttf);
+} 
+
+@font-face {
+  font-family: ayuma;
+  src: url(/Arial_Bold.ttf);
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: ayuma;
+  src: url(/Arial_Italic.ttf);
+  font-family: italic;
+}
+
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre, hr
+a, abbr, acronym, address, code,
+del, dfn, em, img, q, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-weight: inherit;
+  font-style: inherit;
+  font-size: 12px;
+  font-family: inherit;
+  vertical-align: baseline;
+}
+
+body { 
+   
+}
+
+
+table { border-collapse: separate; border-spacing: 0; }
+caption, th, td { text-align: left; font-weight: normal; }
+table, td, th { vertical-align: middle; }
+
+blockquote:before, blockquote:after, q:before, q:after { content: ""; }
+blockquote, q { quotes: "" ""; }
+
+a img { border: none; }
+
+html {
+     font-family: ayuma;	    
+}  
+
+div#client-details{
+    font-size: 120%;
+}
+
+div#specification{
+    
+}
+
+div#specification td{
+    vertical-align: middle;
+    padding-top: 2px;
+    padding-bottom: 1px;
+	padding-right: 1px;
+	border: 1px solid #000;
+	border-collapse: collapse;
+	font-size: 9px;
+}
+
+table td {
+    vertical-align: top;
+    padding: 1px 0;    
+}
+
+table td.amount{
+    text-align: right;
+    padding-right: 2px;
+}
+
+table td.total{
+    padding-top: 5px;
+}
+
+table th {
+	padding-top: 1px;
+    text-align: center;    
+	border: 1px solid #000;
+	border-collapse: collapse;
+}
+
+tr.uneven {
+    background-color: #efefef;
+}
+
+div#footerContent, div#lowFooterContent {
+    color: #777777;
+}
+
+div#footerContent a, div#lowFooterContent a {
+    color: #790000;
+    text-decoration: none;
+}
+
+.date {
+    font-size: 90%;
+    color: #777;
+}
+
+div#totals {
+    margin: 20px 0;
+}
+
+div#simple td {
+    margin-left: 10px;
+    background-color: #efefef;
+}
+
+div#simple tr {
+    border-right: 1px solid #333;
+}
+
+div#simple table{
+    text-align: center;
+    border-left: 1px solid #999;
+}
+
+{% block styles %}
+{%- endblock %}
+
+</style>
+</head>
+<body>	
+	{% block content %}{% endblock %}
+</body>
+</html>

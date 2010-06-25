@@ -1,0 +1,230 @@
+{% extends "/base/index.html" %}
+{% block title %}Edycja faktury{% endblock %}
+
+{% block content %}
+<div id="dialog" title="Usunąć fakturę?" style="display: none;">
+    <p>
+        <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+        Czy na pewno usunąć fakturę?
+    </p>
+</div>
+
+<div id="content-main">
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabs-1">Faktura</a></li>
+            <li><a href="#tabs-3">Kursy walut</a></li>
+            <li><a href="#tabs-2">Dodatkowe informacje</a></li>
+		</ul>
+
+        <div id="tabs-1">
+            {{ h.form(url(controller='invoices', action='edit', id=request.urlvars['id']), method="post") }}
+            <fieldset class="module aligned">
+                <div class="form-row">
+                	{{ c.form.id() }}
+                	{{ c.form.number.label }}
+					{{ c.form.number(class_="important vMediumTextField", disabled="disabled") }}					
+                </div>
+                <div class="form-row">
+                    <div>
+                    	{{ c.form.company.label }}
+						{{ c.form.company(class_="important vMediumTextField", disabled="disabled") }}                       
+						
+						<a href="{{ url(controller="companies", action="edit", id=c.invoice.idCompany) }}" class="goto"></a>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="field-box">
+                        {{ c.form.issueDate.label }}
+						{{ c.form.issueDate(class_="vDateField") }}
+						
+						{{ forms.with_errors(c.form.issueDate) }}
+                    </div>
+					<div class="field-box">
+                        {{ c.form.sellDate.label }}
+						{{ c.form.sellDate(class_="vDateField") }}
+						
+						{{ forms.with_errors(c.form.sellDate) }}
+                    </div>
+                </div>                
+                <div class="form-row">
+                    <div class="field-box">
+                    	{{ c.form.isBooked.label }}
+						{{ c.form.isBooked(disabled="disabled") }}                       						
+                    </div>				
+					<div class="field-box">
+						{{ c.form.payment_date.label }}
+						{{ c.form.payment_date(disabled="disabled") }}
+					</div>	
+                </div>
+                <div class="form-row">
+                    <div>
+                    	{{ c.form.tax.label }}
+						{{ c.form.tax() }}                        
+                    </div>
+                </div>
+            </fieldset>
+			
+			<div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">
+				{{ h.submit('Zapisz') }}								
+				{% if c.invoice.date is not none and c.invoice.sellDate is not none %}                    
+					{{ h.link_print('Drukuj', url(controller="invoices", action="print_invoice", id=c.invoice.id)) }}                        
+                {% endif %}				
+				{{ h.link_delete('Usuń', url(controller='invoices', action='delete', id=c.invoice.id)) }}
+				
+				{{ h.link_print('Wezwanie do zapłaty', url(controller='invoices', action='print_demand_payment', id=c.invoice.id)) }}
+				
+				{% if c.invoice.isBooked %}
+					{{ h.link_print('Korekta', url(controller='corrects', action='add', id=c.invoice.id)) }}
+				{% endif %}						 
+			</div>
+
+            {{ h.end_form() }}
+
+            <fieldset class="module aligned">
+                <h2>Pozycje faktury</h2>
+				<div class="bottom">
+                {% if c.invoice.elements|length %}
+                    <table>
+                        <thead>
+                        <tr>
+                            <th class="lp">Lp.</th>
+                            <th>Numer</th>
+                            <th>Trasa</th>
+                            <th>Fracht</th>
+							<th>Waluta</th>
+                            <th>Stawka</th>
+                            <th>VAT</th>
+                            <th>Wartość brutto</th>
+                            <th>Edycja</th>
+                            <th>Usuń</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in c.invoice.elements %}
+                            {{ buildrow(item, loop.index, loop.cycle('row1', 'row2')) }}
+	       				{% endfor %}
+						
+						<tr>
+							<td colspan="3" class="right bold">Razem:</td>
+							<td class="right bold">{{ "%.2f"|format(c.invoice.value|round(2)) }}</td>
+							<td></td>
+							<td></td>
+							<td class="right bold">{{ "%.2f"|format(c.invoice.tax_value|round(2)) }}</td>
+							<td class="right bold">{{ "%.2f"|format(c.invoice.brutto_value|round(2)) }}</td>
+							<td></td>
+						</tr>
+						
+                        </tbody>
+                    </table>
+				{% endif %}
+				</div>
+            </fieldset>
+        </div>
+
+        <div id="tabs-3">
+            <fieldset class="module aligned">
+                <div class="form-row">
+                    <div>
+                        <label>Kurs:</label>
+                        {{ h.text("currencyValue", value=c.invoice.currencyValue) }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label>Z dnia:</label>
+                        {{ h.text("currencyDate", value=c.invoice.currencyDate) }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label>Nr tabeli:</label>
+                        {{ h.text("currencyTableNumber", value=c.invoice.currencyTableNumber) }}
+                    </div>
+                </div>
+            </fieldset>            
+	</div>
+
+        <div id="tabs-2">
+            <fieldset class="module aligned">
+                <div class="form-row">
+                    <div>
+                        <label>Utworzył:</label>
+                        {{ h.text("invoiceCreator", class_="vTextField", value=c.invoice.creator.full_name, disabled=true) }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label>Data utworzenia:</label>
+                        {{ h.text("invoiceCreationDate", class_="vTextField", value=c.invoice.created_at, disabled=true) }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label>Modyfikował:</label>
+                        {{ h.text("invoiceModifier", class_="vTextField", value=c.invoice.modifier.full_name, disabled=true) }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label>Data modyfikacji:</label>
+                        {{ h.text("invoiceModDate", class_="vTextField", value=c.invoice.updated_at, disabled=true) }}
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+	<script>
+	  $(document).ready(function(){
+	    $('#issueDate').datepicker({
+	        dateFormat: 'yy-mm-dd'
+	    });    
+		
+	    $('#sellDate').datepicker({
+	        dateFormat: 'yy-mm-dd'
+	    });
+	    $("#tabs").tabs();		
+	  });
+	</script>
+{% endblock %}
+
+{% macro buildrow(element, index, row) %}
+    <tr class="{{ row }}">
+        <td>
+           {{ index }}
+        </td>
+        <td>
+           {{ element.order.number }}
+        </td>
+        <td>
+            {% if element.order.places|length > 1 %}
+            	{{ element.order.places[0].place.city }} - {{ element.order.places[-1].place.city }}
+            {% endif %}
+        </td>
+        <td class="right">
+           {{ "%.2f"|format(element.value|round(2)) }} 
+        </td>
+		<td>
+			{{ element.currency.value }}
+		</td>
+        <td>
+           {{ element.tax.name }}
+        </td>
+        <td class="right">
+           {{ "%.2f"|format(element.tax_value|round(2))  }}
+        </td>
+        <td class="right">
+           {{ "%.2f"|format(element.brutto_value|round(2)) }}
+        </td>
+        <td>
+        	{{ h.link_edit('', url(controller='orders', action='edit', id=element.order_id)) }}            
+        </td>
+        <td>
+        	{{ h.link_delete('', url(controller='invoices', action='delete_invoice_element', id=element.id)) }}            
+        </td>
+    </tr>
+{%- endmacro %}

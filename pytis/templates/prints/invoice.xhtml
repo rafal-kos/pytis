@@ -1,0 +1,192 @@
+{% extends "/prints/base.xhtml" %}
+
+{% block styles %}
+#table-summary {
+	border-collapse: collapse;	
+}
+
+{%- endblock %}
+
+{% block content %}	
+	{{ page() }}
+	<pdf:nextpage />
+	{{ page('Kopia') }}
+{%- endblock %}
+
+{%macro page(title='Oryginał') %}
+	{{ macros.head() }}
+
+	<h1 style="width: 100%; text-align: center; font-size: 18px;">Faktury VAT nr {{ c.invoice.number }}</h1>
+	<h1 style="width: 100%; text-align: center; font-size: 16px;">{{ title }}</h1>
+	
+	<table width="90%" style="font-size: 9px;">
+		<tr>
+			<td style="width: 80%; text-align: right;">Miejsce wystawienia</td>
+			<td style="text-align: right;"><b>Dębica</b></td>
+		</tr>		
+		<tr>
+			<td style="width: 80%; text-align: right;">Data wystawienia</td>
+			<td style="text-align: right;"><b>{{ c.invoice.issueDate }}</b></td>
+		</tr>			
+		<tr>
+			<td style="width: 80%; text-align: right;">Data sprzedaży</td>
+			<td style="text-align: right;"><b>{{ c.invoice.sellDate }}</b></td>
+		</tr>		
+	</table>
+	
+	<p style="width: 100%; border-top: 1px solid #ccc;">&nbsp;</p>
+	
+	<table style="width: 100%; padding: 0; margin: 0;" cellpadding="0" >
+		<tr>
+			<td style="width: 50%;"><i>Sprzedawca</i></td>
+			<td style="width: 50%;"><i>Nabywca</i></td>
+		</tr>
+		<tr>
+			<td>{{ c.config.companyName }}</td>
+			<td>{{ c.invoice.company.name }}</td>
+		</tr>
+		<tr>
+			<td>{{ c.config.companyStreet }}</td>
+			<td>{{ c.invoice.company.address }}</td>
+		</tr>
+		<tr>
+			<td>{{ c.config.companyZip }} {{ c.config.companyCity }}</td>
+			<td>{{ c.invoice.company.zip }} {{ c.invoice.company.city }}</td>
+		</tr>
+		<tr>
+			<td>Tel./Fax: {{ c.config.companyTelFax }}</td>
+			<td>REGON: {{ c.invoice.company.regon }}</td>
+		</tr>
+		<tr>
+			<td>NIP PL: {{ c.config.companyNIP }}</td>
+			<td>NIP: {{ c.invoice.company.nip }}</td>
+		</tr>
+	</table>
+	
+	<br />
+	
+	<p><b>Bank: PBS o. Dębica</b></p>
+	<p><b>Konto PLN: 30 8642 1139 2013 3914 7268 0001</b></p>
+	<p><b>Konto EUR: PL 03 8642 1139 2013 3914 7268 0002 KOD SWIFT: POLUPLPR</b></p>
+	
+	<br />
+	<div id="specification">
+		<table width="100%" style="font-size: 10px;">
+            <tr class="uneven">
+                <th style="width: 20px;">Lp.</th>
+				<th style="width: 260px;">Nazwa towaru lub usługi</th>
+				<th style="width: 40px;">Jedn</th>
+				<th style="width: 30px;">Ilość</th>
+				<th style="width: 70px;">Cena netto</th>
+				<th style="width: 70px;">Stawka</th>
+				<th style="width: 70px;">Wartość netto</th>
+				<th style="width: 70px;">Kwota VAT</th>
+				<th style="width: 70px;">Wartość brutto</th>				                
+            </tr>					
+					
+			{% for position in c.invoice.elements %}				            
+	            <tr class="even" style="border-bottom: 1px solid #000; font-size: 10px;">
+	                <td style="text-align: center;">{{ loop.index }}</td>				
+ 			  <td>	
+					{% if c.invoice.tax.name == '22%' and position.order.currency.value != 'PLN' %}						
+							Usługa transportowa (data zał. {{ position.order.places[0].date }}) {{ position.order.route }}
+							<br />
+							{{ position.order.currencyValue }}x{{position.order.freight}} E z dn. {{ position.order.currencyDate }} 
+							tab. {{ position.order.currencyTableNumber }}  						
+					{% else %}
+						Usługa transportowa (data zał. {{ position.order.places[0].date }}) {{ position.order.route }}
+					{% endif %}					                	                
+					{% if position.order.foreignOrder %}					
+						&nbsp;{{ position.order.foreignOrder }}
+					{% endif %}
+			  </td>
+					<td style="text-align: center;">fracht</td>
+					<td style="text-align: center;">1</td>
+					<td style="text-align: right;">{{ "%.2f"|format(position.netto_value|round(2)) }}</td>
+                    {% if position.tax.name == 'NPO' %}
+					    <td style="text-align: right;">{{ position.tax.name }}*</td>
+                    {% else %}
+                        <td style="text-align: right;">{{ position.tax.name }}</td>
+                    {% endif %}
+					<td style="text-align: right;">{{ "%.2f"|format(position.netto_value|round(2)) }}</td>
+					<td style="text-align: right;">{{ "%.2f"|format(position.tax_value|round(2)) }}</td>
+					<td style="text-align: right;">{{ "%.2f"|format(position.brutto_value|round(2)) }}</td>					
+	            </tr>						
+			{% endfor %}			
+			<tr>
+				<td colspan="6" style="border: 0; text-align: right;"><b>Razem:</b></td>
+				<td style="text-align: right;">{{ "%.2f"|format(c.invoice.netto_value|round(2)) }}</td>
+				<td style="text-align: right;">{{ "%.2f"|format(c.invoice.tax_value|round(2)) }}</td>
+				<td style="text-align: right;">{{ "%.2f"|format(c.invoice.brutto_value|round(2)) }}</td>
+			</tr>
+			      
+        </table>
+	</div>
+	<br />
+	
+		
+	<table width="90%" id="table-summary">
+		<tr>
+			<td style="width: 20%;">Forma płatności:</td>
+			<td style="width: 30%; text-align: right; padding-right: 10px;">
+				{{ c.invoice.company.payment.value }} {{ c.invoice.company.paymentForm.value }}
+			</td>
+			<td>Zapłacono:</td>
+			<td style="text-align: right; padding-right: 10px;">0.00 {{ c.invoice.elements[0].currency.value }}</td>			
+		</tr>
+		<tr>
+			<td>Termin płatności:</td>
+			<td style="text-align: right; padding-right: 10px;"><b>{{ c.invoice.payment_date }}</b></td>
+			<td>Do zapłaty:</td>
+			<td style="text-align: right; padding-right: 10px;">
+				{{ "%.2f"|format(c.invoice.brutto_value|round(2)) }} {{ c.invoice.elements[0].currency.value }}
+			</td>
+		</tr>	
+		<tr>
+			<td>Suma:</td>
+			<td style="text-align: right; padding-right: 10px;"><b>{{ "%.2f"|format(c.invoice.brutto_value|round(2)) }} {{ c.invoice.elements[0].currency.value }}</b></td>
+			<td colspan="2"></td>
+		</tr>		
+	</table>
+	{% if c.invoice.elements[0].currency.value == 'PLN' %}
+		<p>Słownie: <i>{{ h.currency_spell_out(c.invoice.brutto_value) }}</i></p>
+	{% else %}
+		<p>Słownie: <i>{{ h.currency_spell_out(c.invoice.brutto_value, currency='euro', rest='eurocentów') }}</i></p>
+	{% endif %}
+	<br />
+
+    {% if c.invoice.tax.name == 'NPO' %}
+        <p style="color: #000; text-align: right;">* podatek rozlicza nabywca</p>
+    {% endif %}
+	
+	<div id="footerContent">        
+		<table>
+			<tr>
+                <td width="33%" style="color: #000; text-align: center;">
+                    {{ c.user.full_name }} ({{ c.user.phone }}) 
+                </td>                
+                <td width="33%">
+                    
+                </td>
+                <td width="34%">
+					
+                </td>                
+            </tr>
+            <tr>
+                <td width="33%" style="border-top: 1px solid #ccc; text-align: center;">
+                    osoba upoważniona do wystawienia
+                </td>                
+                <td width="33%">
+                    
+                </td>
+                <td width="34%" style="border-top: 1px solid #ccc; text-align: center;">
+					osoba upoważniona do odbioru
+                </td>
+                
+            </tr>
+        </table>
+        <hr style="width: 100%;" />
+		<p style="width: 100%; text-align: center; font-size: 10px;"><b>KONTO PLN BANK: PBS o/DEBICA nr: 30 8642 1139 2013 3914 7268 0001</b></p>
+		<p style="width: 100%; text-align: center; font-size: 10px;"><b>KONTO EUR BANK: PBS o/DEBICA nr: 03 8642 1139 2013 3914 7268 0002 KOD SWIFT: POLUPLPR</b></p>
+    </div>
+{%- endmacro %}

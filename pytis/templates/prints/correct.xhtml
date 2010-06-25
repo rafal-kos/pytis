@@ -1,0 +1,198 @@
+{% extends "/prints/base.xhtml" %}
+
+{% block styles %}
+
+{%- endblock %}
+
+{% block content %}	
+	{{ page() }}
+	<pdf:nextpage />
+	{{ page('Kopia') }}
+{%- endblock %}
+
+{%macro page(title='Oryginał') %}
+	{{ macros.head() }}
+	
+	<h1 style="width: 100%; text-align: center; font-size: 18px;">Korekta faktury VAT nr {{ c.correct.number }}</h1>
+	<h1 style="width: 100%; text-align: center; font-size: 16px;">{{ title }}</h1>
+	
+	<table width="90%" style="font-size: 9px;">		
+		<tr>
+			<td style="width: 80%; text-align: right;">Data wystawienia</td>
+			<td style="text-align: right;"><b>{{ c.correct.correct_date }}</b></td>
+		</tr>		
+		<tr>
+			<td style="width: 80%; text-align: right;">Termin płatności</td>
+			<td style="text-align: right;"><b>{{ c.correct.payment_date }} </b></td>
+		</tr>
+		<tr>
+			<td style="width: 80%; text-align: right;">Korygowana faktura</td>
+			<td style="text-align: right;"><b>{{ c.correct.invoice.number }}</b></td>
+		</tr>
+		<tr>
+			<td style="width: 80%; text-align: right;">Metoda płatności</td>
+			<td style="text-align: right;"><b>{{ c.correct.invoice.company.payment.value }} {{ c.correct.invoice.company.paymentForm.value }}</b></td>			
+		</tr>
+	</table>
+	
+	<p style="width: 100%; border-top: 1px solid #ccc;">&nbsp;</p>
+	
+	<table style="width: 100%; padding: 0; margin: 0;" cellpadding="0" >
+		<tr>
+			<td style="width: 50%;"><i>Sprzedawca</i></td>
+			<td style="width: 50%;"><i>Nabywca</i></td>
+		</tr>
+		<tr>
+			<td>{{ c.config.companyName }}</td>
+			<td>{{ c.correct.company.name }}</td>
+		</tr>
+		<tr>
+			<td>{{ c.config.companyStreet }}</td>
+			<td>{{ c.correct.company.address }}</td>
+		</tr>
+		<tr>
+			<td>{{ c.config.companyZip }} {{ c.config.companyCity }}</td>
+			<td>{{ c.correct.company.zip }} {{ c.correct.company.city }}</td>
+		</tr>
+		<tr>
+			<td>Tel./Fax: {{ c.config.companyTelFax }}</td>
+			<td>REGON: {{ c.correct.company.regon }}</td>
+		</tr>
+		<tr>
+			<td>NIP PL: {{ c.config.companyNIP }}</td>
+			<td>NIP: {{ c.correct.company.nip }}</td>
+		</tr>
+	</table>
+	
+	<p><b>Bank: PBS o. Dębica</b></p>
+	<p><b>Konto PLN: 30 8642 1139 2013 3914 7268 0001</b></p>
+	<p><b>Konto EUR: PL 03 8642 1139 2013 3914 7268 0002 KOD SWIFT: POLUPLPR</b></p>
+	
+	<br />
+	<div id="specification">
+		<table width="100%" style="font-size: 8px;">
+            <tr class="uneven">
+                <th style="width: 20px;">Lp.</th>
+				<th style="width: 260px;">Nazwa</th>
+				<th style="width: 40px;">Jedn</th>
+				<th style="width: 30px;">Ilość</th>
+				<th style="width: 70px;">Cena netto</th>
+				<th style="width: 70px;">Stawka</th>
+				<th style="width: 70px;">Wartość netto</th>
+				<th style="width: 70px;">Kwota VAT</th>
+				<th style="width: 70px;">Wartość brutto</th>				                
+            </tr>
+			
+			<tr>
+				<td colspan="9" style="text-align: center;"><b>Stan poprzedni</b></td>
+			</tr>
+					
+			{% for position in c.correct.positions %}				            
+	            <tr class="even" style="border-bottom: 1px solid #000;">
+	                <td style="text-align: center;">{{ loop.index }}</td>	                
+	                <td>Usługa transportowa (data zał. {{ position.original_position.order.places[0].date }}) {{ position.original_position.order.route }} </td>
+					<td style="text-align: center;">fracht</td>
+					<td style="text-align: center;">1</td>
+					<td style="text-align: right;">{{ "%.2f"|format(position.original_position.netto_value|round(2)) }}</td>
+					<td style="text-align: right;">{{ position.original_position.invoice.company.tax.name }}</td>
+					<td style="text-align: right;">{{ "%.2f"|format(position.original_position.netto_value|round(2)) }}</td>
+					<td style="text-align: right;">{{ "%.2f"|format(position.original_position.tax_value|round(2)) }}</td>
+					<td style="text-align: right;">{{ "%.2f"|format(position.original_position.brutto_value|round(2)) }}</td>					
+	            </tr>						
+			{% endfor %}
+			
+			<tr>
+				<td colspan="9" style="text-align: center;"><b>Stan aktualny</b></td>
+			</tr>
+					
+			{% for position in c.correct.positions %}            
+	            <tr class="even" style="border-bottom: 1px solid #000;">
+	                <td style="text-align: center;">{{ loop.index }}</td>	                
+	                <td>Usługa transportowa (data zał. {{ position.original_position.order.places[0].date }}) {{ position.original_position.order.route }}</td>
+					<td style="text-align: center;">fracht</td>
+					<td style="text-align: center;">1</td>
+					<td style="text-align: right;">{{ "%.2f"|format(position.netto_value|round(2)) }}</td>
+					<td style="text-align: right;">{{ position.tax.value }}%</td>
+					<td style="text-align: right;">{{ "%.2f"|format(position.netto_value|round(2)) }}</td>
+					<td style="text-align: right;">{{ "%.2f"|format(position.tax_value|round(2)) }}</td>
+					<td style="text-align: right;">{{ "%.2f"|format(position.brutto_value|round(2)) }}</td>					
+	            </tr>						
+			{% endfor %}              
+        </table>
+	</div>
+	<br />
+	
+	<p style="width: 100%; text-align: center; border-bottom: 1px solid #ccc; margin-bottom: 5px;"><b>Podsumowanie i różnica</b></p>
+		
+	<table width="90%" id="table-summary">
+		<tr>
+			<td style="width: 10%;">Razem:</td>
+			<td style="width: 40%; text-align: right; padding-right: 10px;">
+				{{ "%.2f"|format(c.correct.brutto_value - c.correct.invoice.brutto_value) }} {{ c.correct.currency.value }}
+			</td>
+			<td style="width: 20%;">Przed korektą:</td>
+			<td style="width: 30%; text-align: right; padding-right: 10px;">
+				{{ "%.2f"|format(c.correct.invoice.brutto_value|round(2)) }} {{ c.correct.invoice.elements[0].currency.value }}
+			</td>
+		</tr>
+		<tr>
+			<td>Zapłacono:</td>
+			<td style="text-align: right; padding-right: 10px;">0.00 {{ c.correct.currency.value }}</td>
+			<td>Po korekcie:</td>
+			<td style="text-align: right; padding-right: 10px;">
+				{{ "%.2f"|format(c.correct.brutto_value|round(2)) }} {{ c.correct.currency.value }}
+			</td>
+		</tr>
+		<tr>
+			<td>Do zapłaty:</td>
+			<td style="text-align: right; padding-right: 10px;">
+				{{ "%.2f"|format(c.correct.brutto_value - c.correct.invoice.brutto_value) }} {{ c.correct.currency.value }}
+			</td>
+			<td></td>
+			<td></td>
+		</tr>		
+	</table>
+	{% if c.correct.currency.value == "PLN" %}
+		<p>Słownie: <i>{{ h.currency_spell_out(c.correct.brutto_value - c.correct.invoice.brutto_value) }}</i></p>
+	{% else %}
+		<p>Słownie: <i>{{ h.currency_spell_out(c.correct.brutto_value - c.correct.invoice.brutto_value, currency='euro', rest='eurocentów') }}</i></p>
+	{% endif %}
+	
+	<br />	
+	
+	{% if c.correct.description %}
+		<b>Uwagi do korekty:</b>
+		{{ c.correct.description }}
+	{% endif %}
+	
+	<div id="footerContent">
+		<table>
+			<tr>
+                <td width="33%" style="color: #000; text-align: center;">
+                    {{ c.user.full_name }} ({{ c.user.phone }}) 
+                </td>                
+                <td width="33%">
+                    
+                </td>
+                <td width="34%">
+					
+                </td>                
+            </tr>
+            <tr>
+                <td width="33%" style="border-top: 1px solid #ccc; text-align: center;">
+                    osoba upoważniona do wystawienia
+                </td>                
+                <td width="33%">
+                    
+                </td>
+                <td width="34%" style="border-top: 1px solid #ccc; text-align: center;">
+					osoba upoważniona do odbioru
+                </td>
+                
+            </tr>
+        </table>
+        <hr style="width: 100%;" />
+		<p style="width: 100%; text-align: center; font-size: 10px;"><b>KONTO PLN BANK: PBS o/DEBICA nr: 30 8642 1139 2013 3914 7268 0001</b></p>
+		<p style="width: 100%; text-align: center; font-size: 10px;"><b>KONTO EUR BANK: PBS o/DEBICA nr: 03 8642 1139 2013 3914 7268 0002 KOD SWIFT: POLUPLPR</b></p>
+    </div>
+{%- endmacro %}

@@ -1,0 +1,117 @@
+{% extends "/prints/base.xhtml" %}
+{% block content %}	
+	<p style="width: 100%; text-align: right;">Dębica, dn. {{ h.today() }}</p>
+	<table width="100%" style="padding: 1px;">
+		<tr>
+			<td>OKREŚLENIE WIERZYCIELA</td>
+			<td width="50%"></td>			
+		</tr>		
+		<tr>
+			<td>{{ c.config.companyName }}</td>						
+			<td width="50%"></td>			
+		</tr>		
+		<tr>
+			<td>{{ c.config.companyStreet }}</td>						
+			<td width="50%"></td>			
+		</tr>		
+		<tr>
+			<td>{{ c.config.companyZip }} {{ c.config.companyCity }}</td>					
+			<td width="50%"></td>			
+		</tr>				
+	</table>
+	
+	<table width="100%">
+		<tr>
+			<td width="50%"></td>
+			<td>OKREŚLENIE DŁUŻNIKA</td>			
+		</tr>		
+		<tr>
+			<td width="50%"></td>
+			<td>{{ c.invoices[0].company.name }}</td>
+		</tr>		
+		<tr>
+			<td width="50%"></td>
+			<td>{{ c.invoices[0].company.address }}</td>
+		</tr>		
+		<tr>
+			<td width="50%"></td>
+			<td>{{ c.invoices[0].company.zip }} {{ c.invoices[0].company.city }}</td>
+		</tr>		
+	</table>
+	
+	<br />
+	
+	<h1 style="width: 100%; text-align: center; font-weight: bold;">OSTATECZNE WEZWANIE DO ZAPŁATY</h1>
+	<br />
+	<br />
+	<p style="text-indent: 2cm;">Na podstawie art. 476 Kodeksu cywilnego (Dz. U. z 1964 r. nr 16, poz. 93, z późn. zmianami) 
+	wzywamy do natychmiastowego uregulowania należnej sumy, 
+	zgodnie z poniższym zestawieniem.</p>
+	
+	<div id="specification">
+		<table width="100%">
+            <tr class="uneven">
+                <th width="16%">Nr faktury</th>
+				<th width="16%">Data wystawienia</th>
+				<th width="16%">Kwota netto</th>
+				<th width="16%">Kwota brutto</th>
+				<th width="16%">Data płatności</th>
+				<th width="16%">Pozostało do zapłaty</th>                
+            </tr>
+					
+			{% for invoice in c.invoices %}            
+	            <tr class="even" style="border-bottom: 1px solid #000;">
+	                <td style="text-align: center;">{{ invoice.number }}</td>
+	                <td style="text-align: center;">{{ invoice.issueDate|string }}</td>
+	                <td style="text-align: right;">{{ "%.2f"|format(invoice.value) }} {{ invoice.elements[0].currency.value }}</td>
+					<td style="text-align: right;">{{ "%.2f"|format(invoice.brutto_value) }} {{ invoice.elements[0].currency.value }}</td>
+					<td style="text-align: center;">{{ invoice.payment_date }}</td>
+					<td style="text-align: right;">{{ "%.2f"|format(invoice.brutto_value) }} {{ invoice.elements[0].currency.value }}</td>
+	            </tr>			
+				
+				{% if loop.last %}
+					<tr>
+						<td colspan="5" style="text-align: right;"><b>Razem:</b></td>
+						<td style="text-align: right;">{{ "%.2f"|format(c.sum) }} {{ c.invoices[0].elements[0].currency.value }}</td>
+					</tr>							
+				{% endif %}
+			{% endfor %}            
+        </table>
+	</div>
+	<br />	
+	
+	{% if  c.invoices[0].elements[0].currency.value == "PLN" %}
+		<p><i>Słownie do zapłaty: {{ h.currency_spell_out(c.sum) }}</i></p>
+	{% else %}
+		<p><i>Słownie do zapłaty: {{ h.currency_spell_out(c.sum, currency='euro', rest='eurocentów') }}</i></p>
+	{% endif %}
+	
+	<p style="text-indent: 2cm;">Wymienioną sumę prosimy przekazać na nasz rachunek bankowy nr <b>{{ c.config.companyAccountPL }}</b> w ciągu 7 dni od daty otrzymania niniejszego wezwania. 
+	W przypadku nie przekazania należnej sumy w wyznaczonym terminie, 
+	skierujemy sprawę na drogę postępowania sądowego bez ponownego wezwania do zapłaty.</p>
+	<p style="text-indent: 2cm;">W przypadku gdy dokonali już Państwo zapłaty, prosimy o przesłanie nam faksem kopii polecenia przelewu.</p>
+	
+	<p style="width: 100%; color: #FF7373; text-align: center;">Informujemy również, iż działając na podstawie Ustawy z dnia 14 lutego 2003r. </p>
+	<p style="width: 100%; color: #FF7373; text-align: center;">„o udostępnianiu informacji gospodarczych” w przypadku braku zapłaty, po upływie miesiąca od daty </p>
+	<p style="width: 100%; color: #FF7373; text-align: center;">wysłania niniejszego wezwania informacja o Państwa zobowiązaniach zostanie przekazana do:</p>
+	<p style="width: 100%; color: #FF7373; text-align: center;"><b>Krajowego Rejestru Długów </b></p>
+	<p style="width: 100%; color: #FF7373; text-align: center;"><b>Biura Informacji Gospodarczej S.A.,</b></p>
+	<p style="width: 100%; color: #FF7373; text-align: center;"><b>z siedzibą we Wrocławiu przy ul. Armii Ludowej 21.</b></p>	
+	
+	<div id="footerContent">
+        <table>
+            <tr>
+                <td width="33%">
+                    
+                </td>                
+                <td width="33%">
+                    
+                </td>
+                <td width="34%">
+					<i>(pieczęć i podpis wierzyciela)</i>
+                </td>
+                
+            </tr>
+        </table>
+    </div>
+{%- endblock %}

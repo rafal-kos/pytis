@@ -1,0 +1,14 @@
+syntax: glob
+*.*~
+*.~*
+syntax: regexp
+\.py[co]$
+\..*\.swp$
+\.eprj$
+^build/
+^docs/_build
+^docs/html
+^dist/
+^MANIFEST$
+\.idea$
+\.cache$

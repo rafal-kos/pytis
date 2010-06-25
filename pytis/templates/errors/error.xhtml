@@ -1,0 +1,14 @@
+{% extends "/base/index.html" %}
+{% block title %}Błąd systemu{% endblock %}
+
+{% block content %}
+
+{% if c.code == '403' %}
+	<h3>Nie masz wystarczających uprawnień do tej akcji. Proszę
+	<a href="{{ url(controller='users', action='login') }}">zalogować</a> się jako inny użytkownik.</h3>
+{% else %}
+	<h2>{{ c.message|string }}</h2>
+	test
+{% endif %}
+
+{% endblock %}
