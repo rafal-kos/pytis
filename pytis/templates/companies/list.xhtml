@@ -50,6 +50,13 @@
                             {{ h.text("name", id="nameField", value=request.GET.get('name', '')) }}
                         </div>
                     </div>
+                    <div class="form-row">
+                        <div>
+                            <label>NIP:</label>
+                            <br />
+                            {{ h.text("nip", id="nipField", value=request.GET.get('nip', '')) }}
+                        </div>
+                    </div>
                     <div class="form-row">                        
                         {{ h.button_search('Szukaj') }}
                     </div>

@@ -21,8 +21,11 @@ class CompaniesController(BaseController):
      
     def list(self):                                                   
         name = request.GET.get('name', '')
+        nip = request.GET.get('nip', '')
         
-        records = Company.query.filter(Company.shortName.like(u'%' + name + u'%')).order_by(Company.name).all()                                
+        records = Company.query.filter(Company.shortName.like(u'%' + name + u'%')) \
+                                    .filter(Company.nip.like(u'%' + nip + u'%')) \
+                                    .order_by(Company.name).all()
         
         c.paginator = paginate.Page(
             records,            
