@@ -66,7 +66,7 @@ class InvoicePosition(Base):
         order = Order.query.get(self.order_id)        
 
         order.isFactured = 1
-        meta.Session.update(order)
+        meta.Session.add(order)
 
         meta.Session.add(self)
         meta.Session.commit()
@@ -186,17 +186,25 @@ class Invoice(Base, ActionObject):
                 self.currencyDate = currency.date
                 self.currencyTableNumber = currency.tableNumber         
                                                  
-        if  self.elements and self.tax.name != 'NPO' and "EUR" in [element.order.currency.value for element in self.elements]:            
-            '''Zmiana waluty dla polskiego kontrahenta z zleceniem na EURO'''                        
-            currency = Dictionary.query.filter_by(value = "PLN").one()
-            for element in self.elements:
-                if element.order.currency.value != "PLN":                    
-                    element.value = element.order.freight * element.order.currencyValue
-                    element.currency = currency
-                    element.save()                                       
-                    
-                    if element.order.transport_order and element.order.transport_order.currency.value != "PLN":
-                        element.order.transport_order.save()
+        if  self.elements: 
+            if self.tax.name != 'NPO' and "EUR" in [element.order.currency.value for element in self.elements]:
+                raise Exception(self.elements)
+                '''Zmiana waluty dla polskiego kontrahenta z zleceniem na EURO'''
+                currency = Dictionary.query.filter_by(value = "PLN").one()
+                for element in self.elements:
+                    if element.order.currency.value != "PLN":
+                        element.value = element.order.freight * (element.order.currencyValue or 1)
+                        element.currency = currency
+                        element.save()
+
+                        if element.order.transport_order and element.order.transport_order.currency.value != "PLN":
+                            element.order.transport_order.save()
+            else:
+                for element in self.elements:
+                    if element.currency.value != element.order.currency:
+                        element.currency = element.order.currency
+                        element.tax = element.order.company.tax                        
+                        element.save()
 
         meta.Session.add(self)
         meta.Session.commit()
