@@ -14,7 +14,7 @@ class Globals(object):
         'app_globals' variable
         """
         #from pytis.model.setting import Setting
-        #self.settings = Setting.load()        
+        #self.settings = Setting.load()
         self.cache = CacheManager(**parse_cache_config_options(config))        
         
         self.companyName = u"Dębickie Centrum Spedycji T. Bielatowicz, M. Kos Sp. j."

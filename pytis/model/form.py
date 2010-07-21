@@ -69,7 +69,7 @@ class CompanyForm(PytisForm):
     description = TextAreaField('Opis', [validators.length(max=255)])
     paymentForm = QuerySelectField(u'Forma płatności', query_factory=get_payment_form, allow_blank=False)
     payment = QuerySelectField(u'Termin płatności', query_factory=get_payment, allow_blank=False)    
-    tax = QuerySelectField(u'Stawka VAT', query_factory=get_taxes, label_attr='name')
+    tax = QuerySelectField(u'Stawka VAT', query_factory=get_taxes, label_attr='name')    
 
 class PlaceForm(PytisForm):
     id = HiddenField()

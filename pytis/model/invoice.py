@@ -187,8 +187,7 @@ class Invoice(Base, ActionObject):
                 self.currencyTableNumber = currency.tableNumber         
                                                  
         if  self.elements: 
-            if self.tax.name != 'NPO' and "EUR" in [element.order.currency.value for element in self.elements]:
-                raise Exception(self.elements)
+            if self.tax.name != 'NPO' and "EUR" in [element.order.currency.value for element in self.elements]:                
                 '''Zmiana waluty dla polskiego kontrahenta z zleceniem na EURO'''
                 currency = Dictionary.query.filter_by(value = "PLN").one()
                 for element in self.elements:

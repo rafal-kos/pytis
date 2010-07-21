@@ -20,7 +20,7 @@ import pytis.lib.helpers as h
 import webhelpers.paginate as paginate
 from pytis.controllers.companies import PlaceForm
 from pytis.model.form import OrderForm, OrderPlaceForm, TransportOrderForm, DelegationForm       
-        
+
 log = logging.getLogger(__name__)
 
 class OrdersController(BaseController):                            
@@ -29,7 +29,7 @@ class OrdersController(BaseController):
     def __before__(self):        
         pass
         
-    def list(self):                                     
+    def list(self):        
         #from sqlalchemy.sql import select
         #from sqlalchemy.sql.expression import alias, and_
         #o = Order.__table__.alias('o')
