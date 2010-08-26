@@ -55,6 +55,7 @@ class Company(Base):
     created_at = Column(types.Date, default=sa.func.now())
     updated_at = Column(types.TIMESTAMP, default=sa.func.current_timestamp())
     tax_id = Column(types.Integer, sa.ForeignKey('tax.id'), nullable=False)
+    contact_phone = Column(types.Unicode(20))
 
     places = orm.relation(Place, primaryjoin=
                                 id == Place.idCompany,

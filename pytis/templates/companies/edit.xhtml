@@ -79,6 +79,14 @@
             </div>
             <div class="form-row">
                 <div>
+                    {{ c.form.contact_phone.label }}
+					{{ c.form.contact_phone(class_="vTextField") }}
+
+					{{ forms.with_errors(c.form.contact_phone) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
                     {{ c.form.regon.label }}
 					{{ c.form.regon(class_="vTextField") }}
 					

@@ -66,6 +66,7 @@ class CompanyForm(PytisForm):
     address = TextField('Adres', [validators.required(message=u'Pole jest wymagane')])
     zip = TextField('Kod', [validators.required(message=u'Pole jest wymagane')])
     city = TextField('Miasto', [validators.required(message=u'Pole jest wymagane')])
+    contact_phone = TextField(u'Tel. kontaktowy', [validators.required(message=u'Pole jest wymagange')])
     description = TextAreaField('Opis', [validators.length(max=255)])
     paymentForm = QuerySelectField(u'Forma płatności', query_factory=get_payment_form, allow_blank=False)
     payment = QuerySelectField(u'Termin płatności', query_factory=get_payment, allow_blank=False)    

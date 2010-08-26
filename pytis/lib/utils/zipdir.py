@@ -39,5 +39,3 @@ def zipdir(dirPath=None, zipFilePath=None, includeDirInZip=True):
             #Here to allow for inserting an empty directory.  Still TBD/TODO.
             outFile.writestr(zipInfo, "")
     outFile.close()
-
-zipdir(r"d:\My Dropbox\projekty\python\scripts")
