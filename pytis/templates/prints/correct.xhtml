@@ -13,7 +13,7 @@
 {%macro page(title='Oryginał') %}
 	{{ macros.head() }}
 	
-	<h1 style="width: 100%; text-align: center; font-size: 18px;">Korekta faktury VAT nr {{ c.correct.number }}</h1>
+	<h1 style="width: 100%; text-align: center; font-size: 18px;">Faktura VAT korekta nr {{ c.correct.number }}</h1>
 	<h1 style="width: 100%; text-align: center; font-size: 16px;">{{ title }}</h1>
 	
 	<table width="90%" style="font-size: 9px;">		
@@ -31,7 +31,7 @@
 		</tr>
 		<tr>
 			<td style="width: 80%; text-align: right;">Metoda płatności</td>
-			<td style="text-align: right;"><b>{{ c.correct.invoice.company.payment.value }} {{ c.correct.invoice.company.paymentForm.value }}</b></td>			
+			<td style="text-align: right;"><b>{{ c.correct.invoice.company.payment.value }}</b></td>
 		</tr>
 	</table>
 	
@@ -59,7 +59,7 @@
 			<td>REGON: {{ c.correct.company.regon }}</td>
 		</tr>
 		<tr>
-			<td>NIP PL: {{ c.config.companyNIP }}</td>
+			<td>NIP: {{ c.config.companyNIP }}</td>
 			<td>NIP: {{ c.correct.company.nip }}</td>
 		</tr>
 	</table>
@@ -148,8 +148,8 @@
 			<td style="text-align: right; padding-right: 10px;">
 				{{ "%.2f"|format(c.correct.brutto_value - c.correct.invoice.brutto_value) }} {{ c.correct.currency.value }}
 			</td>
-			<td></td>
-			<td></td>
+			<td>Kwota VAT:</td>
+			<td style="text-align: right; padding-right: 10px;">{{ "%.2f"|format(c.correct.tax_value|round(2)) }} {{ c.correct.currency.value }}</td>
 		</tr>		
 	</table>
 	{% if c.correct.currency.value == "PLN" %}

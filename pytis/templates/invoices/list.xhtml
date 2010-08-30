@@ -18,18 +18,18 @@
 
 <div id="dialog" title="Wydruk rejestru sprzedaży">
 	<fieldset class="module aligned">
-	<div class="form-row">
+    <div class="form-row">
 		<div>
-			<label for="yearField">Rok:</label>
-			{{ h.text("year", id="sellRegistryYear", value=c.year) }}
+			<label>Od:</label>
+			{{ h.text("year", id="sellRegistryFrom") }}
 		</div>
-	</div>	
-	<div class="form-row">
+	</div>
+    <div class="form-row">
 		<div>
-			<label for="sellRegistryMonth">Miesiąc:</label>
-			{{ h.select("month", none, c.months, prompt="Wybierz...", id="sellRegistryMonth") }}		
+			<label>Do:</label>
+			{{ h.text("year", id="sellRegistryTo") }}
 		</div>
-	</div>		
+	</div>
 	</fieldset>
 </div>
 
@@ -111,12 +111,23 @@
     </div>	
 </div>
 
+<style type="text/css">
+    .ui-datepicker {z-index:10100;}
+</style>
 
 <script type="text/javascript">
   $(document).ready(function(){
     $('#invoiceDateFrom').datepicker({
         dateFormat: 'yy-mm-dd'
     });
+
+    $('#sellRegistryFrom').datepicker({
+        dateFormat: 'yy-mm-dd'
+    })
+
+    $('#sellRegistryTo').datepicker({
+        dateFormat: 'yy-mm-dd'
+    })
 	
     $('#invoiceDateTo').datepicker({
         dateFormat: 'yy-mm-dd'
@@ -136,10 +147,10 @@
         buttons: {
             'Drukuj': function() {
                     $(this).dialog('close');
-					var $month = $("#sellRegistryMonth").val();
-					var $year = $('#sellRegistryYear').val();
+					var $from = $("#sellRegistryFrom").val();
+					var $to = $('#sellRegistryTo').val();
 										
-                    var $page = "{{ url(controller='invoices', action='print_sell_registry') }}" + '?year=' + $year + '&month=' + $month;					
+                    var $page = "{{ url(controller='invoices', action='print_sell_registry') }}" + '?from=' + $from + '&to=' + $to;
                     window.location.replace($page);
             },
             'Anuluj': function() {

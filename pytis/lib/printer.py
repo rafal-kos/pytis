@@ -15,11 +15,11 @@ Klasa odpowiedzialna za wydruk dokumentów
 '''
 class Printer(object):   
     def sell_registry(self):
-        year = request.params.get('year')
-        month = request.params.get('month')
+        date_from = request.params.get('from')
+        date_to = request.params.get('to')
                 
         buffer = StringIO.StringIO()               
-        #TODO: NPO dodać
+
         columns = ['Numer', 
                    'NIP', 
                    'Kontrahent', 
@@ -31,8 +31,8 @@ class Printer(object):
                    'Stawka 22% netto',
                    'Stawka 22% VAT',
                    'NPO']
-        invoices = Invoice.query.options(eagerload('elements')).filter(Invoice.number.like('%/' + month + '/' + year + '%')).order_by(Invoice.series_number).all()
-        corrects = InvoiceCorrect.query.options(eagerload('positions')).filter(InvoiceCorrect.number.like('%/' + month + '/' + year + '%')).order_by(InvoiceCorrect.series_number).all()
+        invoices = Invoice.query.options(eagerload('elements')).filter(Invoice.created_at.between(date_from, date_to)).order_by(Invoice.series_number).all()
+        corrects = InvoiceCorrect.query.options(eagerload('positions')).filter(InvoiceCorrect.created_at.between(date_from, date_to)).order_by(InvoiceCorrect.series_number).all()
         
         wb = xlwt.Workbook()
         ws = wb.add_sheet('Rejestr')        
