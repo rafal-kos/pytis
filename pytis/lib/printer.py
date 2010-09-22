@@ -31,9 +31,9 @@ class Printer(object):
                    'Stawka 22% netto',
                    'Stawka 22% VAT',
                    'NPO']
-        invoices = Invoice.query.options(eagerload('elements')).filter(Invoice.created_at.between(date_from, date_to)).order_by(Invoice.series_number).all()
+        invoices = Invoice.query.options(eagerload('elements')).filter(Invoice.created_at.between(date_from , date_to)).order_by(Invoice.series_number).all()
         corrects = InvoiceCorrect.query.options(eagerload('positions')).filter(InvoiceCorrect.created_at.between(date_from, date_to)).order_by(InvoiceCorrect.series_number).all()
-        
+
         wb = xlwt.Workbook()
         ws = wb.add_sheet('Rejestr')        
         
@@ -60,7 +60,7 @@ class Printer(object):
             ws.write(i + 1, 0, invoice.number, style1)
             ws.write(i + 1, 1, invoice.company.nip, style1)
             ws.write(i + 1, 2, invoice.company.name, style1)
-            ws.write(i + 1, 3, str(invoice.issueDate), style1)
+            ws.write(i + 1, 3, str(invoice.created_at), style1)
             ws.write(i + 1, 4, str(invoice.sellDate), style1)
                                   
             # Kontrahent 22%
@@ -85,7 +85,7 @@ class Printer(object):
             ws.write(i + rows_count, 0, invoice.number, style1)
             ws.write(i + rows_count, 1, invoice.company.nip, style1)
             ws.write(i + rows_count, 2, invoice.company.name, style1)
-            ws.write(i + rows_count, 3, str(invoice.correct_date), style1)
+            ws.write(i + rows_count, 3, str(invoice.created_at), style1)
             ws.write(i + rows_count, 4, str(invoice.sell_date), style1)
                                   
             # Kontrahent 22%
