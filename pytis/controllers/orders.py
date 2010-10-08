@@ -74,7 +74,7 @@ class OrdersController(BaseController):
             return render('/orders/list.xhtml')              
 
     def show_delegations(self, id):
-        c.delegations = Delegation.query.filter(Delegation.driver_id == id).order_by(Delegation.created_at).limit(10)
+        c.delegations = Delegation.query.filter(Delegation.driver_id == id).order_by(Delegation.created_at.desc()).limit(10)
         return render_macro('/base/macros.xhtml', 'delegation_list')
 
     def add(self):
