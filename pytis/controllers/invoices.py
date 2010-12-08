@@ -169,11 +169,41 @@ class InvoicesController(BaseController):
         c.invoice.save()
         
         return h.generate_pdf('/prints/invoice.xhtml', 'faktura')
-    
+
+    @h.auth.authorize(h.auth.is_admin)
+    def print_export_companies(self):
+        d = Printer()
+
+        doc = d.export_companies()
+
+        response.headers['Content-type'] = "text/xml; charset='utf-8'"
+        response.headers['Content-disposition'] = 'attachment; filename=%s' % 'kontrahenci.xml'
+        content = doc.getvalue()
+        response.headers['Content-Length'] = str(len(content))
+
+        doc.close()
+
+        return content
+
+    @h.auth.authorize(h.auth.is_admin)
+    def print_export_invoices(self):
+        d = Printer()
+        doc = d.export_to_cdn('2010-12-01', '2010-12-31')
+
+        response.headers['Content-type'] = "text/xml; charset='utf-8'"
+        response.headers['Content-disposition'] = 'attachment; filename=%s' % 'faktury.xml'
+        content = doc.getvalue()
+        response.headers['Content-Length'] = str(len(content))
+
+        doc.close()
+
+        return content
+
     @h.auth.authorize(h.auth.is_admin)
     def print_sell_registry(self):
         d = Printer()
         doc = d.sell_registry()
+        doc = d.export_to_cdn('2010-12-01', '2010-12-31')
         
         response.headers['Content-type'] = 'application/vnd.ms-excel'
         response.headers['Content-disposition'] = 'attachment; filename=%s' % 'rejestr_sprzedazy.xls'

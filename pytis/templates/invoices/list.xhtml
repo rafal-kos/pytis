@@ -38,6 +38,8 @@
 <div id="content-main">
 	<div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">
 		{{ h.link_print('Rejestr sprzedaży', url(controller='', action=''), id='sellRegistry') }}
+
+        {{ h.link_print('Eksport kontrahentow do OPTIMY', url(controller='invoices', action='print_export_companies')) }}
 	</div>
     
     <div id="changelist" class="module filtered">    	
@@ -151,6 +153,14 @@
 					var $to = $('#sellRegistryTo').val();
 										
                     var $page = "{{ url(controller='invoices', action='print_sell_registry') }}" + '?from=' + $from + '&to=' + $to;
+                    window.location.replace($page);
+            },
+            'Eksportuj do OPTIMY': function() {
+                    $(this).dialog('close');
+					var $from = $("#sellRegistryFrom").val();
+					var $to = $('#sellRegistryTo').val();
+
+                    var $page = "{{ url(controller='invoices', action='print_export_invoices') }}" + '?from=' + $from + '&to=' + $to;
                     window.location.replace($page);
             },
             'Anuluj': function() {

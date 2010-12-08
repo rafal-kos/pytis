@@ -9,6 +9,9 @@ from decimal import Decimal
 
 import StringIO
 import xlwt
+import codecs
+from xml.dom.minidom import Document
+from pytis.model.company import Company
 
 '''
 Klasa odpowiedzialna za wydruk dokumentów
@@ -105,4 +108,145 @@ class Printer(object):
                 ws.write(i + rows_count, 10, invoice.diff_netto_value * (invoice.currency_value or 1), style1)        
                 
         wb.save(buffer)
+        return buffer
+
+    def _add_element(self, document, key, value, cdata = False):
+        element = document.createElement(key)
+
+        if cdata:
+            text = document.createCDATASection(value)
+        else:
+            text = document.createTextNode(value)        
+
+        element.appendChild(text)
+
+        return element
+
+    def _add_invoice(self, document, invoice):
+        invoiceElement = document.createElement('REJESTR_SPRZEDAZY_VAT')
+        invoiceElement.appendChild(self._add_element(document, 'MODUL', 'Rejestr VAT'))
+        invoiceElement.appendChild(self._add_element(document, 'REJESTR', 'SPRZEDAZ2', True))
+        invoiceElement.appendChild(self._add_element(document, 'DATA_WYSTAWIENIA', str(invoice.issueDate), True))
+        invoiceElement.appendChild(self._add_element(document, 'DATA_SPRZEDAZY', str(invoice.sellDate), True))
+        invoiceElement.appendChild(self._add_element(document, 'TERMIN', str(invoice.payment_date), True))
+        invoiceElement.appendChild(self._add_element(document, 'NUMER', invoice.number, True))
+        invoiceElement.appendChild(self._add_element(document, 'KOREKTA', 'Nie'))
+        invoiceElement.appendChild(self._add_element(document, 'FISKALNA', 'Nie'))
+        invoiceElement.appendChild(self._add_element(document, 'DETALICZNA', 'Nie'))
+        invoiceElement.appendChild(self._add_element(document, 'PODMIOT', invoice.company.shortName, True))
+        invoiceElement.appendChild(self._add_element(document, 'NAZWA1', invoice.company.name, True))
+        invoiceElement.appendChild(self._add_element(document, 'NAZWA1', invoice.company.nip, True))
+        invoiceElement.appendChild(self._add_element(document, 'ULICA', invoice.company.address, True))
+        invoiceElement.appendChild(self._add_element(document, 'NR_DOMU', '', True))
+        invoiceElement.appendChild(self._add_element(document, 'MIASTO', invoice.company.city, True))
+        invoiceElement.appendChild(self._add_element(document, 'KOD_POCZTOWY', invoice.company.zip, True))
+        invoiceElement.appendChild(self._add_element(document, 'OPIS', invoice.number, True))
+        invoiceElement.appendChild(self._add_element(document, 'FORMA_PLATNOSCI', invoice.company.payment.value, True))
+
+        positions = document.createElement('POZYCJE')
+        for position in invoice.elements:
+            positionElement = document.createElement('POZYCJA')
+            positionElement.appendChild(self._add_element(document, 'STAWKA_VAT', str(position.tax.value)))
+            positionElement.appendChild(self._add_element(document, 'STATUS_VAT', 'opodatkowana'))
+            positionElement.appendChild(self._add_element(document, 'NETTO', str(position.netto_value)))
+            positionElement.appendChild(self._add_element(document, 'VAT', str(position.tax_value)))
+            
+            positions.appendChild(positionElement)
+
+        payment = document.createElement('PLATNOSCI')
+        paymentElement = document.createElement('PLATNOSC')
+        paymentElement.appendChild(self._add_element(document, 'TERMIN_PLAT', str(invoice.payment_date), True))
+        paymentElement.appendChild(self._add_element(document, 'FORMA_PLATNOSCI_PLAT', str(invoice.company.payment.value), True))
+        paymentElement.appendChild(self._add_element(document, 'KWOTA_PLN_PLAT', str(invoice.brutto_value), True))
+        paymentElement.appendChild(self._add_element(document, 'KWOTA_PLAT', str(invoice.brutto_value), True))
+        paymentElement.appendChild(self._add_element(document, 'KIERUNEK', 'przychod', True))
+
+        payment.appendChild(paymentElement)
+
+        invoiceElement.appendChild(payment)
+        invoiceElement.appendChild(positions)
+
+        return invoiceElement
+
+    def _add_company(self, document, company):
+        element = document.createElement('KONTRAHENT')
+
+        element.appendChild(self._add_element(document, 'AKRONIM', company.shortName, True))
+        element.appendChild(self._add_element(document, 'RODZAJ', 'odbiorca', True))
+        element.appendChild(self._add_element(document, 'PLATNIK_VAT', 'Tak', True))
+        element.appendChild(self._add_element(document, 'ODBIORCA', company.shortName, True))
+
+        addressElement = document.createElement('ADRESY')
+        addressElement.appendChild(self._add_element(document, 'STATUS', 'aktualny'))
+        addressElement.appendChild(self._add_element(document, 'NAZWA1', company.name, True))
+        addressElement.appendChild(self._add_element(document, 'ULICA', company.address, True))
+        addressElement.appendChild(self._add_element(document, 'NR_DOMU', '', True))
+        addressElement.appendChild(self._add_element(document, 'MIASTO', company.city, True))
+        addressElement.appendChild(self._add_element(document, 'KOD_POCZTOWY', company.zip, True))
+        addressElement.appendChild(self._add_element(document, 'NIP', company.nip, True))
+        addressElement.appendChild(self._add_element(document, 'REGON', company.regon, True))
+
+        element.appendChild(addressElement)
+
+        return element
+
+    def export_companies(self):
+        """Export companies to OPTIMA"""
+        doc = Document()
+        companies = Company.query.all()
+        buffer = StringIO.StringIO()
+
+        root = doc.createElement('ROOT')
+        root.setAttribute('xml_ns', 'http://www.cdn.com.pl/optima/offline')
+        doc.appendChild(root)
+
+        companiesElement = doc.createElement('KONTRAHENCI')
+        companiesElement.appendChild(self._add_element(doc, 'WERSJA', '2.00'))
+        companiesElement.appendChild(self._add_element(doc, 'BAZA_ZRD_ID', 'MAGAZ'))
+        companiesElement.appendChild(self._add_element(doc, 'BAZA_DOC_ID', 'biuro'))
+
+        for company in companies:
+            companiesElement.appendChild(self._add_company(doc, company))
+
+        root.appendChild(companiesElement)
+
+        buffer.write(doc.toprettyxml(indent=' '))        
+        return buffer
+
+    def export_to_cdn(self, date_from, date_to):
+        """Export invoices to OPTIMA"""
+        doc = Document()
+        buffer = StringIO.StringIO()
+
+        invoices = Invoice.query.options(eagerload('elements')).filter(Invoice.issueDate.between(date_from , date_to)).order_by(Invoice.series_number).all()
+
+        root = doc.createElement('ROOT')
+        root.setAttribute('xml_ns', 'http://www.cdn.com.pl/optima/offline')
+        doc.appendChild(root)
+
+        companiesElement = doc.createElement('KONTRAHENCI')
+        companiesElement.appendChild(self._add_element(doc, 'WERSJA', '2.00'))
+        companiesElement.appendChild(self._add_element(doc, 'BAZA_ZRD_ID', 'MAGAZ'))
+        companiesElement.appendChild(self._add_element(doc, 'BAZA_DOC_ID', 'biuro'))        
+        root.appendChild(companiesElement)
+
+        companies = []
+        for invoice in invoices:
+            """fetch sets of companies"""
+            if invoice.company not in companies:
+                companies.append(invoice.company)
+
+        for company in companies:            
+            companiesElement.appendChild(self._add_company(doc, company))
+        root.appendChild(companiesElement)
+
+        invoicesElement = doc.createElement('REJESTR_SPRZEDAZY_VAT')
+        invoicesElement.appendChild(self._add_element(doc, 'WERSJA', '2.00'))
+        invoicesElement.appendChild(self._add_element(doc, 'BAZA_ZRD_ID', 'MAGAZ'))
+        invoicesElement.appendChild(self._add_element(doc, 'BAZA_DOC_ID', 'biuro'))
+        for invoice in invoices:
+            invoicesElement.appendChild(self._add_invoice(doc, invoice))
+        root.appendChild(invoicesElement)
+
+        buffer.write(doc.toprettyxml(indent=' '))        
         return buffer
