@@ -177,15 +177,17 @@ class Printer(object):
         element.appendChild(self._add_element(document, 'ODBIORCA', company.shortName, True))
 
         addressElement = document.createElement('ADRESY')
-        addressElement.appendChild(self._add_element(document, 'STATUS', 'aktualny'))
-        addressElement.appendChild(self._add_element(document, 'NAZWA1', company.name, True))
-        addressElement.appendChild(self._add_element(document, 'ULICA', company.address, True))
-        addressElement.appendChild(self._add_element(document, 'NR_DOMU', '', True))
-        addressElement.appendChild(self._add_element(document, 'MIASTO', company.city, True))
-        addressElement.appendChild(self._add_element(document, 'KOD_POCZTOWY', company.zip, True))
-        addressElement.appendChild(self._add_element(document, 'NIP', company.nip, True))
-        addressElement.appendChild(self._add_element(document, 'REGON', company.regon, True))
-
+        addElement = document.createElement('ADRES')
+        addElement.appendChild(self._add_element(document, 'STATUS', 'aktualny'))
+        addElement.appendChild(self._add_element(document, 'NAZWA1', company.name, True))
+        addElement.appendChild(self._add_element(document, 'ULICA', company.address, True))
+        addElement.appendChild(self._add_element(document, 'NR_DOMU', '', True))
+        addElement.appendChild(self._add_element(document, 'MIASTO', company.city, True))
+        addElement.appendChild(self._add_element(document, 'KOD_POCZTOWY', company.zip, True))
+        addElement.appendChild(self._add_element(document, 'NIP', company.nip, True))
+        addElement.appendChild(self._add_element(document, 'REGON', company.regon, True))
+        addressElement.appendChild(addElement)
+        
         element.appendChild(addressElement)
 
         return element
@@ -197,20 +199,20 @@ class Printer(object):
         buffer = StringIO.StringIO()
 
         root = doc.createElement('ROOT')
-        root.setAttribute('xml_ns', 'http://www.cdn.com.pl/optima/offline')
+        root.setAttribute('xmlns', 'http://www.cdn.com.pl/optima/offline')
         doc.appendChild(root)
 
         companiesElement = doc.createElement('KONTRAHENCI')
         companiesElement.appendChild(self._add_element(doc, 'WERSJA', '2.00'))
-        companiesElement.appendChild(self._add_element(doc, 'BAZA_ZRD_ID', 'MAGAZ'))
-        companiesElement.appendChild(self._add_element(doc, 'BAZA_DOC_ID', 'biuro'))
+        companiesElement.appendChild(self._add_element(doc, 'BAZA_ZRD_ID', 'SPRZ'))
+        companiesElement.appendChild(self._add_element(doc, 'BAZA_DOC_ID', 'SPRZ'))
 
         for company in companies:
             companiesElement.appendChild(self._add_company(doc, company))
 
         root.appendChild(companiesElement)
 
-        buffer.write(doc.toprettyxml(indent=' '))        
+        buffer.write(doc.toprettyxml(indent='', newl=''))        
         return buffer
 
     def export_to_cdn(self, date_from, date_to):
@@ -221,13 +223,13 @@ class Printer(object):
         invoices = Invoice.query.options(eagerload('elements')).filter(Invoice.issueDate.between(date_from , date_to)).order_by(Invoice.series_number).all()
 
         root = doc.createElement('ROOT')
-        root.setAttribute('xml_ns', 'http://www.cdn.com.pl/optima/offline')
+        root.setAttribute('xmlns', 'http://www.cdn.com.pl/optima/offline')
         doc.appendChild(root)
 
         companiesElement = doc.createElement('KONTRAHENCI')
         companiesElement.appendChild(self._add_element(doc, 'WERSJA', '2.00'))
-        companiesElement.appendChild(self._add_element(doc, 'BAZA_ZRD_ID', 'MAGAZ'))
-        companiesElement.appendChild(self._add_element(doc, 'BAZA_DOC_ID', 'biuro'))        
+        companiesElement.appendChild(self._add_element(doc, 'BAZA_ZRD_ID', 'SPRZ'))
+        companiesElement.appendChild(self._add_element(doc, 'BAZA_DOC_ID', 'SPRZ'))
         root.appendChild(companiesElement)
 
         companies = []
@@ -242,11 +244,11 @@ class Printer(object):
 
         invoicesElement = doc.createElement('REJESTR_SPRZEDAZY_VAT')
         invoicesElement.appendChild(self._add_element(doc, 'WERSJA', '2.00'))
-        invoicesElement.appendChild(self._add_element(doc, 'BAZA_ZRD_ID', 'MAGAZ'))
-        invoicesElement.appendChild(self._add_element(doc, 'BAZA_DOC_ID', 'biuro'))
+        invoicesElement.appendChild(self._add_element(doc, 'BAZA_ZRD_ID', 'SPRZ'))
+        invoicesElement.appendChild(self._add_element(doc, 'BAZA_DOC_ID', 'SPRZ'))
         for invoice in invoices:
             invoicesElement.appendChild(self._add_invoice(doc, invoice))
         root.appendChild(invoicesElement)
 
-        buffer.write(doc.toprettyxml(indent=' '))        
+        buffer.write(doc.toprettyxml(indent='', newl=''))        
         return buffer
