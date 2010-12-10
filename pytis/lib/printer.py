@@ -242,7 +242,7 @@ class Printer(object):
             companiesElement.appendChild(self._add_company(doc, company))
         root.appendChild(companiesElement)
 
-        invoicesElement = doc.createElement('REJESTR_SPRZEDAZY_VAT')
+        invoicesElement = doc.createElement('REJESTRY_SPRZEDAZY_VAT')
         invoicesElement.appendChild(self._add_element(doc, 'WERSJA', '2.00'))
         invoicesElement.appendChild(self._add_element(doc, 'BAZA_ZRD_ID', 'SPRZ'))
         invoicesElement.appendChild(self._add_element(doc, 'BAZA_DOC_ID', 'SPRZ'))
