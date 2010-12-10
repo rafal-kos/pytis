@@ -175,6 +175,8 @@ class Printer(object):
         element.appendChild(self._add_element(document, 'RODZAJ', 'odbiorca', True))
         element.appendChild(self._add_element(document, 'PLATNIK_VAT', 'Tak', True))
         element.appendChild(self._add_element(document, 'ODBIORCA', company.shortName, True))
+        element.appendChild(self._add_element(document, 'INDYWIDUALNY_TERMIN', 'Tak'))
+        element.appendChild(self._add_element(document, 'TERMIN', company.paymentForm.value.split()[0], True))
 
         addressElement = document.createElement('ADRESY')
         addElement = document.createElement('ADRES')
