@@ -188,7 +188,9 @@ class InvoicesController(BaseController):
     @h.auth.authorize(h.auth.is_admin)
     def print_export_invoices(self):
         d = Printer()
-        doc = d.export_to_cdn('2010-12-01', '2010-12-31')
+        date_from = request.params.get('from')
+        date_to = request.params.get('to')
+        doc = d.export_to_cdn(date_from, date_to)
 
         response.headers['Content-type'] = "text/xml; charset='utf-8'"
         response.headers['Content-disposition'] = 'attachment; filename=%s' % 'faktury.xml'
@@ -202,8 +204,7 @@ class InvoicesController(BaseController):
     @h.auth.authorize(h.auth.is_admin)
     def print_sell_registry(self):
         d = Printer()
-        doc = d.sell_registry()
-        doc = d.export_to_cdn('2010-12-01', '2010-12-31')
+        doc = d.sell_registry()        
         
         response.headers['Content-type'] = 'application/vnd.ms-excel'
         response.headers['Content-disposition'] = 'attachment; filename=%s' % 'rejestr_sprzedazy.xls'

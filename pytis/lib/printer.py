@@ -125,7 +125,7 @@ class Printer(object):
     def _add_invoice(self, document, invoice):
         invoiceElement = document.createElement('REJESTR_SPRZEDAZY_VAT')
         invoiceElement.appendChild(self._add_element(document, 'MODUL', 'Rejestr VAT'))
-        invoiceElement.appendChild(self._add_element(document, 'REJESTR', 'SPRZEDAZ2', True))
+        invoiceElement.appendChild(self._add_element(document, 'REJESTR', 'SPRZEDAZ', True))
         invoiceElement.appendChild(self._add_element(document, 'DATA_WYSTAWIENIA', str(invoice.issueDate), True))
         invoiceElement.appendChild(self._add_element(document, 'DATA_SPRZEDAZY', str(invoice.sellDate), True))
         invoiceElement.appendChild(self._add_element(document, 'TERMIN', str(invoice.payment_date), True))
@@ -135,13 +135,16 @@ class Printer(object):
         invoiceElement.appendChild(self._add_element(document, 'DETALICZNA', 'Nie'))
         invoiceElement.appendChild(self._add_element(document, 'PODMIOT', invoice.company.shortName, True))
         invoiceElement.appendChild(self._add_element(document, 'NAZWA1', invoice.company.name, True))
-        invoiceElement.appendChild(self._add_element(document, 'NAZWA1', invoice.company.nip, True))
+        invoiceElement.appendChild(self._add_element(document, 'NIP', invoice.company.nip, True))
         invoiceElement.appendChild(self._add_element(document, 'ULICA', invoice.company.address, True))
         invoiceElement.appendChild(self._add_element(document, 'NR_DOMU', '', True))
         invoiceElement.appendChild(self._add_element(document, 'MIASTO', invoice.company.city, True))
         invoiceElement.appendChild(self._add_element(document, 'KOD_POCZTOWY', invoice.company.zip, True))
         invoiceElement.appendChild(self._add_element(document, 'OPIS', invoice.number, True))
         invoiceElement.appendChild(self._add_element(document, 'FORMA_PLATNOSCI', invoice.company.payment.value, True))
+        
+        if invoice.company.tax.name == 'NPO':
+            invoiceElement.appendChild(self._add_element(document, 'EKSPORT', u'wewnątrzunijny', True))    
 
         positions = document.createElement('POZYCJE')
         for position in invoice.elements:
@@ -172,11 +175,13 @@ class Printer(object):
         element = document.createElement('KONTRAHENT')
 
         element.appendChild(self._add_element(document, 'AKRONIM', company.shortName, True))
-        element.appendChild(self._add_element(document, 'RODZAJ', 'odbiorca', True))
+        element.appendChild(self._add_element(document, 'RODZAJ', 'odbiorca dostawca', True))
         element.appendChild(self._add_element(document, 'PLATNIK_VAT', 'Tak', True))
         element.appendChild(self._add_element(document, 'ODBIORCA', company.shortName, True))
         element.appendChild(self._add_element(document, 'INDYWIDUALNY_TERMIN', 'Tak'))
         element.appendChild(self._add_element(document, 'TERMIN', company.paymentForm.value.split()[0], True))
+        element.appendChild(self._add_element(document, 'MAX_ZWLOKA', '5', True))
+        element.appendChild(self._add_element(document, 'FORMA_PLATNOSCI', company.payment.value, True))        
 
         addressElement = document.createElement('ADRESY')
         addElement = document.createElement('ADRES')
@@ -221,8 +226,9 @@ class Printer(object):
         """Export invoices to OPTIMA"""
         doc = Document()
         buffer = StringIO.StringIO()
-
+        
         invoices = Invoice.query.options(eagerload('elements')).filter(Invoice.issueDate.between(date_from , date_to)).order_by(Invoice.series_number).all()
+        corrects = InvoiceCorrect.query.options(eagerload('positions')).filter(InvoiceCorrect.correct_date.between(date_from, date_to)).order_by(InvoiceCorrect.series_number).all()
 
         root = doc.createElement('ROOT')
         root.setAttribute('xmlns', 'http://www.cdn.com.pl/optima/offline')
@@ -240,6 +246,11 @@ class Printer(object):
             if invoice.company not in companies:
                 companies.append(invoice.company)
 
+        for correct in corrects:
+            """fetch sets of companies"""
+            if correct.company not in companies:
+                companies.append(correct.company)
+
         for company in companies:            
             companiesElement.appendChild(self._add_company(doc, company))
         root.appendChild(companiesElement)
@@ -250,6 +261,10 @@ class Printer(object):
         invoicesElement.appendChild(self._add_element(doc, 'BAZA_DOC_ID', 'SPRZ'))
         for invoice in invoices:
             invoicesElement.appendChild(self._add_invoice(doc, invoice))
+
+        for correct in corrects:
+            invoicesElement.appendChild(self._add_invoice(doc, correct))
+
         root.appendChild(invoicesElement)
 
         buffer.write(doc.toprettyxml(indent='', newl=''))        
