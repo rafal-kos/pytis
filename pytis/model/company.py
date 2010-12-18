@@ -45,6 +45,7 @@ class Company(Base):
     name = Column(types.Unicode(255), nullable=False, unique=True, key='company.name')
     shortName = Column(types.Unicode(30), nullable=False, unique=True)
     regon = Column(types.Unicode(14))
+    nip_code = Column(types.Unicode(4), nullable=False, default="PL")
     nip = Column(types.Unicode(15))
     address = Column(types.Unicode(255))
     zip = Column(types.Unicode(12))

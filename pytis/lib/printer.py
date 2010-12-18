@@ -125,7 +125,7 @@ class Printer(object):
     def _add_invoice(self, document, invoice):
         invoiceElement = document.createElement('REJESTR_SPRZEDAZY_VAT')
         invoiceElement.appendChild(self._add_element(document, 'MODUL', 'Rejestr VAT'))
-        invoiceElement.appendChild(self._add_element(document, 'REJESTR', 'SPRZEDAZ', True))
+        invoiceElement.appendChild(self._add_element(document, 'REJESTR', u'SPRZEDAŻ', True))
         invoiceElement.appendChild(self._add_element(document, 'DATA_WYSTAWIENIA', str(invoice.issueDate), True))
         invoiceElement.appendChild(self._add_element(document, 'DATA_SPRZEDAZY', str(invoice.sellDate), True))
         invoiceElement.appendChild(self._add_element(document, 'TERMIN', str(invoice.payment_date), True))
@@ -133,18 +133,32 @@ class Printer(object):
         invoiceElement.appendChild(self._add_element(document, 'KOREKTA', 'Nie'))
         invoiceElement.appendChild(self._add_element(document, 'FISKALNA', 'Nie'))
         invoiceElement.appendChild(self._add_element(document, 'DETALICZNA', 'Nie'))
+        invoiceElement.appendChild(self._add_element(document, 'TYP_PODMIOTU', 'kontrahent', True))
         invoiceElement.appendChild(self._add_element(document, 'PODMIOT', invoice.company.shortName, True))
+
+        """
         invoiceElement.appendChild(self._add_element(document, 'NAZWA1', invoice.company.name, True))
-        invoiceElement.appendChild(self._add_element(document, 'NIP', invoice.company.nip, True))
+
+        if invoice.company.nip.split(' ')[0].strip()[:2].isdigit():
+            invoiceElement.appendChild(self._add_element(document, 'NIP', invoice.company.nip, True))
+        else:
+            nip = invoice.company.nip[2:].strip()
+            country = invoice.company.nip.split(' ')[0].strip()[:2]
+
+            invoiceElement.appendChild(self._add_element(document, 'NIP', nip, True))
+            invoiceElement.appendChild(self._add_element(document, 'NIP_KRAJ', country, True))
+
         invoiceElement.appendChild(self._add_element(document, 'ULICA', invoice.company.address, True))
         invoiceElement.appendChild(self._add_element(document, 'NR_DOMU', '', True))
         invoiceElement.appendChild(self._add_element(document, 'MIASTO', invoice.company.city, True))
         invoiceElement.appendChild(self._add_element(document, 'KOD_POCZTOWY', invoice.company.zip, True))
+        """
         invoiceElement.appendChild(self._add_element(document, 'OPIS', invoice.number, True))
         invoiceElement.appendChild(self._add_element(document, 'FORMA_PLATNOSCI', invoice.company.payment.value, True))
         
         if invoice.company.tax.name == 'NPO':
-            invoiceElement.appendChild(self._add_element(document, 'EKSPORT', u'wewnątrzunijny', True))    
+            invoiceElement.appendChild(self._add_element(document, 'EKSPORT', u'wewnątrzunijny', True))
+            invoiceElement.appendChild(self._add_element(document, 'DEKLARACJA_VATUE', 'Tak', True))
 
         positions = document.createElement('POZYCJE')
         for position in invoice.elements:
@@ -191,9 +205,17 @@ class Printer(object):
         addElement.appendChild(self._add_element(document, 'NR_DOMU', '', True))
         addElement.appendChild(self._add_element(document, 'MIASTO', company.city, True))
         addElement.appendChild(self._add_element(document, 'KOD_POCZTOWY', company.zip, True))
-        addElement.appendChild(self._add_element(document, 'NIP', company.nip, True))
         addElement.appendChild(self._add_element(document, 'REGON', company.regon, True))
         addressElement.appendChild(addElement)
+
+        if company.nip.split(' ')[0].strip()[:2].isdigit():
+            addElement.appendChild(self._add_element(document, 'NIP', company.nip.replace('-', '').replace(' ', ''), True))
+        else:
+            nip = company.nip[2:].strip()   
+            country = company.nip.split(' ')[0].strip()[:2]
+
+            addElement.appendChild(self._add_element(document, 'NIP', nip.replace('-', '').replace(' ', ''), True))
+            addElement.appendChild(self._add_element(document, 'NIP_KRAJ', country, True))
         
         element.appendChild(addressElement)
 

@@ -22,8 +22,11 @@ class Country(Base):
     query = db.query_property(db.Query)
     
     code = Column("code", db.Unicode(12), primary_key=True, nullable=False)
-    name = Column("name", db.Unicode(200), nullable=False)    
-    
+    name = Column("name", db.Unicode(200), nullable=False)
+
+    def __unicode__(self):
+        return self.code
+
     def save(self):
         meta.Session.add(self)
         meta.Session.commit()

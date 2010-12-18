@@ -63,6 +63,22 @@ class CompanyForm(PytisForm):
     shortName = TextField('Akronim', [validators.required(message=u'Pole jest wymagane')])
     regon = TextField('REGON', [validators.required(message=u'Pole jest wymagane')])
     nip = TextField('NIP', [validators.required(message=u'Pole jest wymagane')])
+    nip_code = SelectField('NIP Kraj', choices=[
+        ('PL', 'PL'),
+        ('DE', 'DE'),
+        ('EN', 'EN'),
+        ('FR', 'FR'),
+        ('CZ', 'CZ'),
+        ('EE', 'EE'),
+        ('SK', 'SK'),
+        ('NL', 'NL'),
+        ('BE', 'BE'),
+        ('LV', 'LV'),
+        ('AT', 'AT'),
+        ('EL', 'EL'),
+        ('HU', 'HU'),
+        ('ES', 'ES')
+    ])
     address = TextField('Adres', [validators.required(message=u'Pole jest wymagane')])
     zip = TextField('Kod', [validators.required(message=u'Pole jest wymagane')])
     city = TextField('Miasto', [validators.required(message=u'Pole jest wymagane')])
@@ -70,7 +86,11 @@ class CompanyForm(PytisForm):
     description = TextAreaField('Opis', [validators.length(max=255)])
     paymentForm = QuerySelectField(u'Forma płatności', query_factory=get_payment_form, allow_blank=False)
     payment = QuerySelectField(u'Termin płatności', query_factory=get_payment, allow_blank=False)    
-    tax = QuerySelectField(u'Stawka VAT', query_factory=get_taxes, label_attr='name')    
+    tax = QuerySelectField(u'Stawka VAT', query_factory=get_taxes, label_attr='name')
+
+    def validate_nip(form, field):
+        if not form.nip.data.isdigit():
+            raise ValidationError(u'NIP może zawierać tylko cyfry')
 
 class PlaceForm(PytisForm):
     id = HiddenField()

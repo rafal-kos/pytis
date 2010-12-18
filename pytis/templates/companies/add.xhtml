@@ -64,6 +64,16 @@
 					{{ forms.with_errors(c.form.regon) }}
                 </div>
             </div>
+
+            <div class="form-row">
+                <div>
+                    {{ c.form.nip_code.label }}
+					{{ c.form.nip_code(class_="vTextField") }}
+
+					{{ forms.with_errors(c.form.nip_code) }}
+                </div>
+            </div>
+
             <div class="form-row">
                 <div>
                     {{ c.form.nip.label }}

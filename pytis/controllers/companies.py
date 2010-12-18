@@ -86,4 +86,21 @@ class CompaniesController(BaseController):
             flash(u'Miejsce pomyślnie edytowane.')
             return self.redirect(url(controller='companies', action='edit', id=c.place.idCompany))
         
-        return render('/places/edit.xhtml')            
+        return render('/places/edit.xhtml')
+
+    def fix_nip(self):
+        import datetime
+        companies = Company.query.filter(Company.updated_at < '2010-12-17')
+
+        for company in companies:
+            if company.nip.split(' ')[0].strip()[:2].isdigit():
+                nip_code = 'PL'
+                nip = company.nip.replace('-', '').replace(' ', '')
+            else:
+                nip_code = company.nip.split(' ')[0].strip()[:2]
+                nip = company.nip[2:].strip().replace('-', '').replace(' ', '')
+
+            company.nip = nip
+            company.nip_code = nip_code
+            company.updated_at = str(datetime.datetime.now())
+            company.save()
