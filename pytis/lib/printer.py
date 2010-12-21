@@ -206,16 +206,9 @@ class Printer(object):
         addElement.appendChild(self._add_element(document, 'MIASTO', company.city, True))
         addElement.appendChild(self._add_element(document, 'KOD_POCZTOWY', company.zip, True))
         addElement.appendChild(self._add_element(document, 'REGON', company.regon, True))
+        addElement.appendChild(self._add_element(document, 'NIP', company.nip, True))
+        addElement.appendChild(self._add_element(document, 'NIP_KRAJ', company.nip_code, True))
         addressElement.appendChild(addElement)
-
-        if company.nip.split(' ')[0].strip()[:2].isdigit():
-            addElement.appendChild(self._add_element(document, 'NIP', company.nip.replace('-', '').replace(' ', ''), True))
-        else:
-            nip = company.nip[2:].strip()   
-            country = company.nip.split(' ')[0].strip()[:2]
-
-            addElement.appendChild(self._add_element(document, 'NIP', nip.replace('-', '').replace(' ', ''), True))
-            addElement.appendChild(self._add_element(document, 'NIP_KRAJ', country, True))
         
         element.appendChild(addressElement)
 
