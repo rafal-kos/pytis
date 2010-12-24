@@ -75,6 +75,7 @@ class CompanyForm(PytisForm):
         ('BE', 'BE'),
         ('LV', 'LV'),
         ('AT', 'AT'),
+        ('ATU', 'ATU'),
         ('EL', 'EL'),
         ('HU', 'HU'),
         ('ES', 'ES')
@@ -89,7 +90,7 @@ class CompanyForm(PytisForm):
     tax = QuerySelectField(u'Stawka VAT', query_factory=get_taxes, label_attr='name')
 
     def validate_nip(form, field):
-        if '-' in form.nip.data or '.' in form.ni.data:
+        if '-' in form.nip.data or '.' in form.nip.data:
             raise ValidationError(u'NIP może zawierać tylko cyfry lub litery')
 
 class PlaceForm(PytisForm):
