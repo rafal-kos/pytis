@@ -135,24 +135,9 @@ class Printer(object):
         invoiceElement.appendChild(self._add_element(document, 'DETALICZNA', 'Nie'))
         invoiceElement.appendChild(self._add_element(document, 'TYP_PODMIOTU', 'kontrahent', True))
         invoiceElement.appendChild(self._add_element(document, 'PODMIOT', invoice.company.shortName, True))
+        invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ILE', '1', True))
+        invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ZA_ILE', '1', True))
 
-        """
-        invoiceElement.appendChild(self._add_element(document, 'NAZWA1', invoice.company.name, True))
-
-        if invoice.company.nip.split(' ')[0].strip()[:2].isdigit():
-            invoiceElement.appendChild(self._add_element(document, 'NIP', invoice.company.nip, True))
-        else:
-            nip = invoice.company.nip[2:].strip()
-            country = invoice.company.nip.split(' ')[0].strip()[:2]
-
-            invoiceElement.appendChild(self._add_element(document, 'NIP', nip, True))
-            invoiceElement.appendChild(self._add_element(document, 'NIP_KRAJ', country, True))
-
-        invoiceElement.appendChild(self._add_element(document, 'ULICA', invoice.company.address, True))
-        invoiceElement.appendChild(self._add_element(document, 'NR_DOMU', '', True))
-        invoiceElement.appendChild(self._add_element(document, 'MIASTO', invoice.company.city, True))
-        invoiceElement.appendChild(self._add_element(document, 'KOD_POCZTOWY', invoice.company.zip, True))
-        """
         invoiceElement.appendChild(self._add_element(document, 'OPIS', invoice.number, True))
         invoiceElement.appendChild(self._add_element(document, 'FORMA_PLATNOSCI', invoice.company.payment.value, True))
         
@@ -167,6 +152,10 @@ class Printer(object):
             positionElement.appendChild(self._add_element(document, 'STATUS_VAT', 'opodatkowana'))
             positionElement.appendChild(self._add_element(document, 'NETTO', str(position.netto_value)))
             positionElement.appendChild(self._add_element(document, 'VAT', str(position.tax_value)))
+            positionElement.appendChild(self._add_element(document, 'NETTO_SYS', str(position.netto_value)))
+            positionElement.appendChild(self._add_element(document, 'VAT_SYS', str(position.tax_value)))
+            positionElement.appendChild(self._add_element(document, 'NETTO_SYS2', str(position.netto_value)))
+            positionElement.appendChild(self._add_element(document, 'VAT_SYS2', str(position.tax_value)))
             
             positions.appendChild(positionElement)
 
