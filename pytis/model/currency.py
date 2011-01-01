@@ -46,5 +46,5 @@ class Currency(Base):
                 return None
 
     def save(self):
-        meta.Session.save_or_update(self)
+        meta.Session.add(self)
         meta.Session.commit()
