@@ -27,11 +27,8 @@ def get_payment():
 def get_payment_form():
     return Dictionary.query.filter(Dictionary.key == u'PAYFORM').order_by(Dictionary.value)
 
-def get_tax_type():
-    return [('0', '22%'), ('1', 'NPO'), ('2', '0%')]
-
 def get_taxes():
-    return Tax.query
+    return Tax.query.order_by(Tax.value)
 
 def get_currencies():
     return Dictionary.query.filter(Dictionary.key == 'WAL').order_by(Dictionary.id)

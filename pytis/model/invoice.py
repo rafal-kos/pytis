@@ -202,8 +202,10 @@ class Invoice(Base, ActionObject):
                 for element in self.elements:
                     if element.currency.value != element.order.currency:
                         element.currency = element.order.currency
-                        element.tax = element.order.company.tax                        
                         element.save()
+
+            for element in self.elements:
+                element.tax = self.tax
 
         meta.Session.add(self)
         meta.Session.commit()
