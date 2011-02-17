@@ -94,7 +94,7 @@
 					<td style="text-align: center;">fracht</td>
 					<td style="text-align: center;">1</td>
 					<td style="text-align: right;">{{ "%.2f"|format(position.original_position.netto_value|round(2)) }}</td>
-					<td style="text-align: right;">{{ position.original_position.invoice.company.tax.name }}</td>
+					<td style="text-align: right;">{{ position.original_position.invoice.tax.name }}</td>
 					<td style="text-align: right;">{{ "%.2f"|format(position.original_position.netto_value|round(2)) }}</td>
 					<td style="text-align: right;">{{ "%.2f"|format(position.original_position.tax_value|round(2)) }}</td>
 					<td style="text-align: right;">{{ "%.2f"|format(position.original_position.brutto_value|round(2)) }}</td>					
