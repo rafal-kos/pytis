@@ -173,15 +173,28 @@ class Printer(object):
 
             positions.appendChild(positionElement)
 
-        payment = document.createElement('PLATNOSCI')
-        paymentElement = document.createElement('PLATNOSC')
-        paymentElement.appendChild(self._add_element(document, 'TERMIN_PLAT', str(invoice.payment_date), True))
-        paymentElement.appendChild(self._add_element(document, 'FORMA_PLATNOSCI_PLAT', str(invoice.company.payment.value), True))
-        paymentElement.appendChild(self._add_element(document, 'KWOTA_PLN_PLAT', str(invoice.brutto_value), True))
-        paymentElement.appendChild(self._add_element(document, 'KWOTA_PLAT', str(invoice.brutto_value), True))
-        paymentElement.appendChild(self._add_element(document, 'KIERUNEK', u'przychód', True))
+        if invoice.invoice.tax.name == 'NPO':
+            payment = document.createElement('PLATNOSCI')
+            paymentElement = document.createElement('PLATNOSC')
+            paymentElement.appendChild(self._add_element(document, 'TERMIN_PLAT', str(invoice.payment_date), True))
+            paymentElement.appendChild(self._add_element(document, 'FORMA_PLATNOSCI_PLAT', str(invoice.company.payment.value), True))
+            paymentElement.appendChild(self._add_element(document, 'KWOTA_PLN_PLAT', str(invoice.brutto_value), True))
+            paymentElement.appendChild(self._add_element(document, 'KWOTA_PLAT', str(invoice.brutto_value * invoice.currency_value), True))
+            paymentElement.appendChild(self._add_element(document, 'KIERUNEK', u'przychód', True))
+            paymentElement.appendChild(self._add_element(document, 'WALUTA_PLAT', invoice.currency_symbol, True))
+            paymentElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ILE_PLAT', str(invoice.currency_value), True))
+            paymentElement.appendChild(self._add_element(document, 'DATA_KURSU', str(invoice.currency_date), True))
+            payment.appendChild(paymentElement)
+        else:
+            payment = document.createElement('PLATNOSCI')
+            paymentElement = document.createElement('PLATNOSC')
+            paymentElement.appendChild(self._add_element(document, 'TERMIN_PLAT', str(invoice.payment_date), True))
+            paymentElement.appendChild(self._add_element(document, 'FORMA_PLATNOSCI_PLAT', str(invoice.company.payment.value), True))
+            paymentElement.appendChild(self._add_element(document, 'KWOTA_PLN_PLAT', str(invoice.brutto_value), True))
+            paymentElement.appendChild(self._add_element(document, 'KWOTA_PLAT', str(invoice.brutto_value), True))
+            paymentElement.appendChild(self._add_element(document, 'KIERUNEK', u'przychód', True))
+            payment.appendChild(paymentElement)
 
-        payment.appendChild(paymentElement)
 
         invoiceElement.appendChild(payment)
         invoiceElement.appendChild(positions)
@@ -238,15 +251,27 @@ class Printer(object):
             
             positions.appendChild(positionElement)
 
-        payment = document.createElement('PLATNOSCI')
-        paymentElement = document.createElement('PLATNOSC')
-        paymentElement.appendChild(self._add_element(document, 'TERMIN_PLAT', str(invoice.payment_date), True))
-        paymentElement.appendChild(self._add_element(document, 'FORMA_PLATNOSCI_PLAT', str(invoice.company.payment.value), True))
-        paymentElement.appendChild(self._add_element(document, 'KWOTA_PLN_PLAT', str(invoice.brutto_value), True))
-        paymentElement.appendChild(self._add_element(document, 'KWOTA_PLAT', str(invoice.brutto_value), True))
-        paymentElement.appendChild(self._add_element(document, 'KIERUNEK', u'przychód', True))
-
-        payment.appendChild(paymentElement)
+        if invoice.tax.name == 'NPO':
+            payment = document.createElement('PLATNOSCI')
+            paymentElement = document.createElement('PLATNOSC')
+            paymentElement.appendChild(self._add_element(document, 'TERMIN_PLAT', str(invoice.payment_date), True))
+            paymentElement.appendChild(self._add_element(document, 'FORMA_PLATNOSCI_PLAT', str(invoice.company.payment.value), True))
+            paymentElement.appendChild(self._add_element(document, 'KWOTA_PLN_PLAT', str(invoice.brutto_value * Decimal(repr(invoice.currencyValue))), True))
+            paymentElement.appendChild(self._add_element(document, 'KWOTA_PLAT', str(invoice.brutto_value), True))
+            paymentElement.appendChild(self._add_element(document, 'KIERUNEK', u'przychód', True))
+            paymentElement.appendChild(self._add_element(document, 'WALUTA_PLAT', invoice.currencySymbol, True))
+            paymentElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ILE_PLAT', str(invoice.currencyValue), True))
+            paymentElement.appendChild(self._add_element(document, 'DATA_KURSU', str(invoice.currencyDate), True))
+            payment.appendChild(paymentElement)
+        else:
+            payment = document.createElement('PLATNOSCI')
+            paymentElement = document.createElement('PLATNOSC')
+            paymentElement.appendChild(self._add_element(document, 'TERMIN_PLAT', str(invoice.payment_date), True))
+            paymentElement.appendChild(self._add_element(document, 'FORMA_PLATNOSCI_PLAT', str(invoice.company.payment.value), True))
+            paymentElement.appendChild(self._add_element(document, 'KWOTA_PLN_PLAT', str(invoice.brutto_value), True))
+            paymentElement.appendChild(self._add_element(document, 'KWOTA_PLAT', str(invoice.brutto_value), True))
+            paymentElement.appendChild(self._add_element(document, 'KIERUNEK', u'przychód', True))
+            payment.appendChild(paymentElement)
 
         invoiceElement.appendChild(payment)
         invoiceElement.appendChild(positions)
