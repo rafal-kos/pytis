@@ -92,6 +92,14 @@ class CompanyForm(PytisForm):
         if '-' in form.nip.data:
             raise ValidationError(u'NIP może zawierać tylko cyfry lub litery')
 
+    def validate_name(form, field):
+        """Strip whitespaces from name"""
+        field.data = field.data.strip()
+
+    def validate_shortName(form, field):
+        """Strip whitespaces from acronym"""
+        field.data = field.data.strip()
+
 class PlaceForm(PytisForm):
     id = HiddenField()
     idCompany = HiddenField()

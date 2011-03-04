@@ -215,9 +215,15 @@ class Printer(object):
         invoiceElement.appendChild(self._add_element(document, 'DETALICZNA', 'Nie'))
         invoiceElement.appendChild(self._add_element(document, 'TYP_PODMIOTU', 'kontrahent', True))
         invoiceElement.appendChild(self._add_element(document, 'PODMIOT', invoice.company.shortName, True))
-        invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ILE', '1', True))
-        invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ZA_ILE', '1', True))
         invoiceElement.appendChild(self._add_element(document, 'KATEGORIA', u'SPRZEDAŻ', True))
+
+        if invoice.elements[0].currency.value != 'PLN':
+            invoiceElement.appendChild(self._add_element(document, 'WALUTA', invoice.elements[0].currency.value, True))
+            invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ILE', str(invoice.currencyValue), True))
+            invoiceElement.appendChild(self._add_element(document, 'DATA_KURSU', str(invoice.currencyDate), True))
+        else:
+            invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ILE', '1', True))
+            invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ZA_ILE', '1', True))
 
         invoiceElement.appendChild(self._add_element(document, 'OPIS', invoice.number, True))
         invoiceElement.appendChild(self._add_element(document, 'FORMA_PLATNOSCI', invoice.company.payment.value, True))
