@@ -1,6 +1,8 @@
 syntax: glob
 *.*~
 *.~*
+pytis*.zip
+data/*
 syntax: regexp
 \.py[co]$
 \..*\.swp$
