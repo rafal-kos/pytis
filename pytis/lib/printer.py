@@ -220,7 +220,8 @@ class Printer(object):
         if invoice.elements[0].currency.value != 'PLN':
             invoiceElement.appendChild(self._add_element(document, 'WALUTA', invoice.elements[0].currency.value, True))
             invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ILE', str(invoice.currencyValue), True))
-            invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ZA_ILE', str(invoice.brutto_value), True))
+            invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ZA_ILE', '1', True))
+            invoiceElement.appendChild(self._add_element(document, 'KURS_WALUTY', u'--', True))
             invoiceElement.appendChild(self._add_element(document, 'DATA_KURSU', str(invoice.currencyDate), True))
         else:
             invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ILE', '1', True))
