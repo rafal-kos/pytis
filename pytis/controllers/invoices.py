@@ -105,7 +105,11 @@ class InvoicesController(BaseController):
             c.form.populate_obj(c.invoice, exclude=['company', 'number', 'payment_date'])
             c.invoice.save()
             
-            flash(u'Faktura pomyślnie zapisana')
+            if not c.invoice.is_exported:
+                flash(u'Faktura pomyślnie zapisana')
+            else:
+                flash(u'Faktura nie może być zmieniana po eksporcie do OPTIMY')
+                
             return self.redirect(url(controller='invoices', action='edit', id=c.invoice.id))
         
         return render('/invoices/edit.xhtml')

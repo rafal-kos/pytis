@@ -10,6 +10,9 @@ import sqlalchemy as sa
 class CompanyExistsException(Exception):
     pass
 
+class NipExistsException(Exception):
+    pass
+
 class Place(Base):
     __tablename__ = 'place'    
     
@@ -72,6 +75,14 @@ class Company(Base):
 
     def __unicode__(self):
         return self.shortName
+
+    def nip_exists(self):
+        try:
+            meta.Session.query(Company).filter(Company.nip == self.nip).one()
+        except orm.exc.NoResultFound:
+            pass
+        else:
+            raise NipExistsException()
 
     def save(self):
         meta.Session.add(self)

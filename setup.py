@@ -13,8 +13,18 @@ setup(
     author_email='',
     url='',
     install_requires=[
-        "Pylons>=0.9.7",
-        "SQLAlchemy>=0.5",
+        "Pylons==1.0",
+        "webhelpers==1.1"
+        "SQLAlchemy==0.6.7",
+        "reportlab",
+        "wtforms",
+        "jinja2",
+        "authkit",
+        "pisa",
+        "html5lib",
+        "mysql-python",
+        "pyofc2",
+        "xlwt"
     ],
     setup_requires=["PasteScript>=1.6.3"],
     packages=find_packages(exclude=['ez_setup']),

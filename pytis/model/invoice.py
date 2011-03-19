@@ -105,6 +105,7 @@ class Invoice(Base, ActionObject):
     idModUser = Column("idModUser", types.Integer, sa.ForeignKey('user.id'))
     is_corrected = Column("is_corrected", types.Boolean, default=False)
     tax_id = tax_id = Column("tax_id", types.Integer, sa.ForeignKey('tax.id'))
+    is_exported = Column("is_exported", types.Boolean, default=False)
 
     company = relation(Company, uselist=False, lazy=False)
     elements = relation(InvoicePosition, lazy=True, order_by=[InvoicePosition.order_id])
@@ -164,8 +165,16 @@ class Invoice(Base, ActionObject):
     def payment_date(self):
         delta = self.company.paymentForm.value.split(' ')[0]
         return str( self.issueDate + datetime.timedelta(int(delta)) )
-    
+
+    def mark_as_exported(self):
+        """Mark invoice as exported"""
+        self.is_exported = True
+        meta.Session.add(self)
+
     def save(self):
+        if self.is_exported:
+            return
+
         if self.id is None:            
             self.idCreator = h.auth.user_id()
         else:            

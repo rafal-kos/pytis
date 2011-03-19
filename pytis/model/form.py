@@ -1,13 +1,10 @@
 ## -*- coding: utf-8 -*-
 
-'''
-ALTER TABLE `dictionary` CHANGE `key` `key` VARCHAR( 20 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL 
-'''
-
 from pytis.lib.validators import PytisForm, is_selected, CountrySelect, PytisQuerySelectField
 from pytis.model.dictionary import Dictionary, Tax, Country
 from pytis.model.document import Document
 from pytis.model.driver import Driver, Truck, Semitrailer
+from pytis.model.company import Company, NipExistsException
 from pytis.model.user import User, Group, UserDoesntExistsException
 from wtforms import validators
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, \
@@ -86,11 +83,19 @@ class CompanyForm(PytisForm):
     description = TextAreaField('Opis', [validators.length(max=255)])
     paymentForm = QuerySelectField(u'Forma płatności', query_factory=get_payment_form, allow_blank=False)
     payment = QuerySelectField(u'Termin płatności', query_factory=get_payment, allow_blank=False)    
-    tax = QuerySelectField(u'Stawka VAT', query_factory=get_taxes, label_attr='name')
+    tax = QuerySelectField(u'Stawka VAT', query_factory=get_taxes, get_label='name')
 
     def validate_nip(form, field):
         if '-' in form.nip.data:
             raise ValidationError(u'NIP może zawierać tylko cyfry lub litery')
+
+        company = Company()
+        company.nip = form.nip.data
+
+        try:
+            company.nip_exists()
+        except NipExistsException:
+            raise ValidationError(u'Podany NIP już istnieje w bazie')
 
     def validate_name(form, field):
         """Strip whitespaces from name"""
@@ -99,6 +104,12 @@ class CompanyForm(PytisForm):
     def validate_shortName(form, field):
         """Strip whitespaces from acronym"""
         field.data = field.data.strip()
+
+class EditCompanyForm(CompanyForm):
+
+    def validate_nip(form, field):
+        if '-' in form.nip.data:
+            raise ValidationError(u'NIP może zawierać tylko cyfry lub litery')
 
 class PlaceForm(PytisForm):
     id = HiddenField()
@@ -136,50 +147,50 @@ class ChangePasswordForm(PytisForm):
     old_password = PasswordField(u'Stare hasło', [validators.required(message=u'Pole jest wymagane')])
     password = PasswordField(u'Hasło', [validators.required(message=u'Pole jest wymagane')])
     password_confirm = PasswordField(u'Hasło', [validators.required(message=u'Pole jest wymagane')])
-    
+
     def validate_old_password(form, field):
         user = User()
         user.id = h.auth.user_id()
         user.password = form.old_password.data
-        
+
         try:
-            user.exists()            
+            user.exists()
         except UserDoesntExistsException:
             raise ValidationError(u'Podano nieprawidłowe hasło')
-        
+
 #------------------CORRECTS-------------------
-class InvoiceCorrectPositionForm(PytisForm):    
-    position_id = HiddenField([validators.required(message=u'Pole jest wymagane.')])    
-    number = TextField('Numer')    
+class InvoiceCorrectPositionForm(PytisForm):
+    position_id = HiddenField([validators.required(message=u'Pole jest wymagane.')])
+    number = TextField('Numer')
     netto_value = TextField('Fracht', [validators.required(message=u'Pole jest wymagane.')])
     brutto_value = DecimalField(u'Wartośc brutto')
-    tax_value = DecimalField('VAT')    
+    tax_value = DecimalField('VAT')
     tax = QuerySelectField('Podatek', query_factory=get_taxes, label_attr='name')
 
 class InvoiceCorrectForm(PytisForm):
     id = HiddenField()
     number = TextField('Numer')
-    company = TextField('Kontrahent')    
+    company = TextField('Kontrahent')
     correct_date = TextField(u'Data korekty', [validators.required(message=u'Pole jest wymagane.')])
-    sell_date = TextField(u'Data sprzedaży', [validators.required(message=u'Pole jest wymagane.')])    
+    sell_date = TextField(u'Data sprzedaży', [validators.required(message=u'Pole jest wymagane.')])
     positions = FieldList(FormField(InvoiceCorrectPositionForm))
     payment_form = QuerySelectField(u'Forma płatności', query_factory=get_payment, allow_blank=False)
     payment_date = TextField(u'Data płatności', [validators.required(message=u'Pole jest wymagane.')])
     description = TextAreaField(u'Opis', [validators.length(max=320, message=u'Maksymalna długość wynosi 320 znaków.')])
-    
-#------------------DICTIONARIES-------------------    
+
+#------------------DICTIONARIES-------------------
 class DictionaryForm(PytisForm):
     id = HiddenField()
     kind = SelectField('Kategoria', coerce=int, choices=Dictionary.get_categories_list().items())
     key = TextField('Klucz', [validators.required(message=u'Pole jest wymagane.')])
     value = TextField(u'Wartość', [validators.required(message=u'Pole jest wymagane.')])
     enabled = BooleanField('Aktywny')
-    
-#------------------GROUPS-------------------    
+
+#------------------GROUPS-------------------
 class GroupForm(PytisForm):
     id = HiddenField()
     name = TextField('Kategoria', [validators.required(message=u'Pole jest wymagane.')])
-    
+
 #------------------INVOICES-------------------
 class InvoiceForm(PytisForm):
     id = HiddenField()
@@ -188,7 +199,7 @@ class InvoiceForm(PytisForm):
     issueDate = TextField(u'Data wystawienia', [validators.required(message=u'Pole jest wymagane.')])
     sellDate = TextField(u'Data sprzedaży', [validators.required(message=u'Pole jest wymagane.')])
     isBooked = BooleanField('Zafakturowana')
-    tax = QuerySelectField(u'Stawka VAT', query_factory=get_taxes, label_attr='name')
+    tax = QuerySelectField(u'Stawka VAT', query_factory=get_taxes, get_label='name')
     payment_date = TextField(u'Data płatności')
     
 class NewInvoiceForm(PytisForm):

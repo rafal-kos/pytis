@@ -220,8 +220,10 @@ class Printer(object):
         if invoice.elements[0].currency.value != 'PLN':
             invoiceElement.appendChild(self._add_element(document, 'WALUTA', invoice.elements[0].currency.value, True))
             invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ILE', str(invoice.currencyValue), True))
-            invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ZA_ILE', '1', True))
-            invoiceElement.appendChild(self._add_element(document, 'KURS_WALUTY', u'--', True))
+            invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ZA_ILE', u'1', True))
+	    #invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ILE_2', str(100), True))
+            #invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ZA_ILE_2', str(invoice.brutto_value), True))
+            invoiceElement.appendChild(self._add_element(document, 'KURS_WALUTY', u'NBP', True))
             invoiceElement.appendChild(self._add_element(document, 'DATA_KURSU', str(invoice.currencyDate), True))
         else:
             invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ILE', '1', True))
@@ -239,23 +241,23 @@ class Printer(object):
             positionElement = document.createElement('POZYCJA')
             positionElement.appendChild(self._add_element(document, 'STAWKA_VAT', str(position.tax.value)))
 
-            if invoice.company.tax.name == 'NPO':
-                #add currency value
-                positionElement.appendChild(self._add_element(document, 'NETTO', str(position.netto_value * Decimal(repr((invoice.currencyValue or 1))))))
-                positionElement.appendChild(self._add_element(document, 'VAT', str(position.tax_value * Decimal(repr((invoice.currencyValue or 1))))))
-                positionElement.appendChild(self._add_element(document, 'NETTO_SYS', str(position.netto_value * Decimal(repr((invoice.currencyValue or 1))))))
-                positionElement.appendChild(self._add_element(document, 'VAT_SYS', str(position.tax_value * Decimal(repr((invoice.currencyValue or 1))))))
-                positionElement.appendChild(self._add_element(document, 'NETTO_SYS2', str(position.netto_value * Decimal(repr((invoice.currencyValue or 1))))))
-                positionElement.appendChild(self._add_element(document, 'VAT_SYS2', str(position.tax_value * Decimal(repr((invoice.currencyValue or 1))))))
-                positionElement.appendChild(self._add_element(document, 'STATUS_VAT', 'nie podlega'))
-            else:
-                positionElement.appendChild(self._add_element(document, 'NETTO', str(position.netto_value)))
-                positionElement.appendChild(self._add_element(document, 'VAT', str(position.tax_value)))
-                positionElement.appendChild(self._add_element(document, 'NETTO_SYS', str(position.netto_value)))
-                positionElement.appendChild(self._add_element(document, 'VAT_SYS', str(position.tax_value)))
-                positionElement.appendChild(self._add_element(document, 'NETTO_SYS2', str(position.netto_value)))
-                positionElement.appendChild(self._add_element(document, 'VAT_SYS2', str(position.tax_value)))
-                positionElement.appendChild(self._add_element(document, 'STATUS_VAT', 'opodatkowana'))
+            #if invoice.company.tax.name == 'NPO':
+            #    #add currency value
+            #    positionElement.appendChild(self._add_element(document, 'NETTO', str(position.netto_value * Decimal(repr((invoice.currencyValue or 1))))))
+            #    positionElement.appendChild(self._add_element(document, 'VAT', str(position.tax_value * Decimal(repr((invoice.currencyValue or 1))))))
+            #    positionElement.appendChild(self._add_element(document, 'NETTO_SYS', str(position.netto_value * Decimal(repr((invoice.currencyValue or 1))))))
+            #    positionElement.appendChild(self._add_element(document, 'VAT_SYS', str(position.tax_value * Decimal(repr((invoice.currencyValue or 1))))))
+            #    positionElement.appendChild(self._add_element(document, 'NETTO_SYS2', str(position.netto_value * Decimal(repr((invoice.currencyValue or 1))))))
+            #    positionElement.appendChild(self._add_element(document, 'VAT_SYS2', str(position.tax_value * Decimal(repr((invoice.currencyValue or 1))))))
+            #    positionElement.appendChild(self._add_element(document, 'STATUS_VAT', 'nie podlega'))
+            #else:
+            positionElement.appendChild(self._add_element(document, 'NETTO', str(position.netto_value)))
+            positionElement.appendChild(self._add_element(document, 'VAT', str(position.tax_value)))
+            positionElement.appendChild(self._add_element(document, 'NETTO_SYS', str(position.netto_value)))
+            positionElement.appendChild(self._add_element(document, 'VAT_SYS', str(position.tax_value)))
+            positionElement.appendChild(self._add_element(document, 'NETTO_SYS2', str(position.netto_value)))
+            positionElement.appendChild(self._add_element(document, 'VAT_SYS2', str(position.tax_value)))
+            positionElement.appendChild(self._add_element(document, 'STATUS_VAT', 'opodatkowana'))
             
             positions.appendChild(positionElement)
 
@@ -264,10 +266,10 @@ class Printer(object):
             paymentElement = document.createElement('PLATNOSC')
             paymentElement.appendChild(self._add_element(document, 'TERMIN_PLAT', str(invoice.payment_date), True))
             paymentElement.appendChild(self._add_element(document, 'FORMA_PLATNOSCI_PLAT', str(invoice.company.payment.value), True))
-            paymentElement.appendChild(self._add_element(document, 'KWOTA_PLN_PLAT', str(invoice.brutto_value * Decimal(repr(invoice.currencyValue))), True))
+            paymentElement.appendChild(self._add_element(document, 'KWOTA_PLN_PLAT', str(invoice.brutto_value * Decimal(repr(invoice.currencyValue or 1))), True))
             paymentElement.appendChild(self._add_element(document, 'KWOTA_PLAT', str(invoice.brutto_value), True))
             paymentElement.appendChild(self._add_element(document, 'KIERUNEK', u'przychód', True))
-            paymentElement.appendChild(self._add_element(document, 'WALUTA_PLAT', invoice.currencySymbol, True))
+            paymentElement.appendChild(self._add_element(document, 'WALUTA_PLAT', invoice.currencySymbol or '', True))
             paymentElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ILE_PLAT', str(invoice.currencyValue), True))
             paymentElement.appendChild(self._add_element(document, 'DATA_KURSU', str(invoice.currencyDate), True))
             payment.appendChild(paymentElement)
@@ -341,6 +343,7 @@ class Printer(object):
     def export_to_cdn(self, date_from, date_to):
         """Export invoices to OPTIMA"""
         doc = Document()
+        from pytis.model import meta
         buffer = StringIO.StringIO()
         
         invoices = Invoice.query.options(eagerload('elements')).filter(Invoice.issueDate.between(date_from , date_to)).order_by(Invoice.series_number).all()
@@ -378,6 +381,10 @@ class Printer(object):
         for invoice in invoices:
             invoicesElement.appendChild(self._add_invoice(doc, invoice))
 
+            if not invoice.is_exported:
+                invoice.mark_as_exported()
+        meta.Session.commit()
+        
         for correct in corrects:
             invoicesElement.appendChild(self._add_correct(doc, correct))
 

@@ -4,12 +4,11 @@ from pylons import request, response, session, tmpl_context as c, url
 from pytis.lib.base import BaseController, render
 from pytis.lib.helpers import flash
 from pytis.model import meta
-from pytis.model.company import Company, Place, CompanyExistsException
+from pytis.model.company import Company, Place, CompanyExistsException, NipExistsException
 import logging
 import pytis.lib.helpers as h
 import webhelpers.paginate as paginate
-from pytis.model.form import PlaceForm, CompanyForm
-
+from pytis.model.form import PlaceForm, CompanyForm, EditCompanyForm
 
 log = logging.getLogger(__name__)           
 
@@ -44,17 +43,17 @@ class CompaniesController(BaseController):
         
         if request.method == 'POST' and c.form.validate():
             company = Company()
-            c.form.populate_obj(company)                        
+            c.form.populate_obj(company)
             company.save()
-            
-            flash(u'Kontrahent pomyślnie dodany.')            
+
+            flash(u'Kontrahent pomyślnie dodany.')
             return self.redirect(url(controller='companies', action='edit', id=company.id))
             
         return render('/companies/add.xhtml')   
     
     def edit(self, id):                                                       
         c.company = Company.query.get_or_abort(id)               
-        c.form = CompanyForm(request.POST, obj=c.company, prefix='company') 
+        c.form = EditCompanyForm(request.POST, obj=c.company, prefix='company')
         c.place_form = PlaceForm(request.POST, prefix='place', idCompany=c.company.id)
         
         if request.method == 'POST' and 'action' in request.POST:
