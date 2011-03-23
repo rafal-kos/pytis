@@ -215,24 +215,23 @@ class Printer(object):
         invoiceElement.appendChild(self._add_element(document, 'DETALICZNA', 'Nie'))
         invoiceElement.appendChild(self._add_element(document, 'TYP_PODMIOTU', 'kontrahent', True))
         invoiceElement.appendChild(self._add_element(document, 'PODMIOT', invoice.company.shortName, True))
-        invoiceElement.appendChild(self._add_element(document, 'KATEGORIA', u'SPRZEDAŻ', True))
 
-        if invoice.elements[0].currency.value != 'PLN':
-            invoiceElement.appendChild(self._add_element(document, 'WALUTA', invoice.elements[0].currency.value, True))
-            invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ILE', str(invoice.currencyValue), True))
-            invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ZA_ILE', u'1', True))
-	    #invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ILE_2', str(100), True))
-            #invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ZA_ILE_2', str(invoice.brutto_value), True))
-            invoiceElement.appendChild(self._add_element(document, 'KURS_WALUTY', u'NBP', True))
-            invoiceElement.appendChild(self._add_element(document, 'DATA_KURSU', str(invoice.currencyDate), True))
+        if invoice.tax.name == 'NPO':
+            if invoice.elements[0].currency.value == 'EUR':
+                invoiceElement.appendChild(self._add_element(document, 'WALUTA', invoice.elements[0].currency.value, True))
+                invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ILE', str(invoice.currencyValue or 1), True))
+                invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ZA_ILE', u'1', True))
+                invoiceElement.appendChild(self._add_element(document, 'KURS_WALUTY', u'NBP', True))
+                invoiceElement.appendChild(self._add_element(document, 'DATA_KURSU', str(invoice.currencyDate or ''), True))
+            invoiceElement.appendChild(self._add_element(document, 'KATEGORIA', u'EKSPORT USŁUG PRZEWO', True))
         else:
             invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ILE', '1', True))
             invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ZA_ILE', '1', True))
+            invoiceElement.appendChild(self._add_element(document, 'KATEGORIA', u'SPRZEDAŻ USŁUG KRAJ', True))
 
-        invoiceElement.appendChild(self._add_element(document, 'OPIS', invoice.number, True))
         invoiceElement.appendChild(self._add_element(document, 'FORMA_PLATNOSCI', invoice.company.payment.value, True))
         
-        if invoice.company.tax.name == 'NPO':
+        if invoice.tax.name == 'NPO':
             invoiceElement.appendChild(self._add_element(document, 'EKSPORT', u'Wewnątrzunijny', False))
             invoiceElement.appendChild(self._add_element(document, 'DEKLARACJA_VATUE', 'Tak', True))
 
@@ -257,7 +256,13 @@ class Printer(object):
             positionElement.appendChild(self._add_element(document, 'VAT_SYS', str(position.tax_value)))
             positionElement.appendChild(self._add_element(document, 'NETTO_SYS2', str(position.netto_value)))
             positionElement.appendChild(self._add_element(document, 'VAT_SYS2', str(position.tax_value)))
-            positionElement.appendChild(self._add_element(document, 'STATUS_VAT', 'opodatkowana'))
+
+            if invoice.company.tax.name == 'NPO':
+                positionElement.appendChild(self._add_element(document, 'STATUS_VAT', 'nie podlega'))
+                positionElement.appendChild(self._add_element(document, 'KATEGORIA_POS', u'EKSPORT USŁUG PRZEWO', True))
+            else:
+                positionElement.appendChild(self._add_element(document, 'STATUS_VAT', 'opodatkowana'))
+                positionElement.appendChild(self._add_element(document, 'KATEGORIA_POS', u'SPRZEDAŻ USŁUG KRAJ', True))
             
             positions.appendChild(positionElement)
 
