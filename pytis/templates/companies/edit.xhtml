@@ -143,6 +143,13 @@
 
             <div class="form-row">
                 <div>
+                    {{ c.form.is_active.label }}
+                    {{ c.form.is_active() }}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div>
                     <label>Utworzono:</label>
                     {{ h.text("created_at", value=c.company.created_at, id="createdField", disabled = true, class_="vTextField") }}
                 </div>

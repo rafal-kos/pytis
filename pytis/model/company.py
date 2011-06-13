@@ -60,6 +60,7 @@ class Company(Base):
     updated_at = Column(types.TIMESTAMP, default=sa.func.current_timestamp())
     tax_id = Column(types.Integer, sa.ForeignKey('tax.id'), nullable=False)
     contact_phone = Column(types.Unicode(20))
+    is_active = Column(types.Boolean(), default=True)
 
     places = orm.relation(Place, primaryjoin=
                                 id == Place.idCompany,

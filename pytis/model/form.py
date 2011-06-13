@@ -84,6 +84,7 @@ class CompanyForm(PytisForm):
     paymentForm = QuerySelectField(u'Forma płatności', query_factory=get_payment_form, allow_blank=False)
     payment = QuerySelectField(u'Termin płatności', query_factory=get_payment, allow_blank=False)    
     tax = QuerySelectField(u'Stawka VAT', query_factory=get_taxes, get_label='name')
+    is_active = BooleanField(u'Aktywny', default=True)
 
     def validate_nip(form, field):
         if '-' in form.nip.data:

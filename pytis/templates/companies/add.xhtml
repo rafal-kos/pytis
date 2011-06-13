@@ -112,6 +112,12 @@
                     {{ c.form.description() }}
                 </div>
             </div>
+            <div class="form-row">
+                <div>
+                    {{ c.form.is_active.label }}
+                    {{ c.form.is_active() }}
+                </div>
+            </div>
         </fieldset>
         <div class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">    
 	        {{ h.submit('Zapisz') }}

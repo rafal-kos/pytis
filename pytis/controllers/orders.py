@@ -261,7 +261,7 @@ class OrdersController(BaseController):
         q = request.params.get('q', '')
         
         company_q = meta.Session.query(Company.id, Company.shortName, Company.name)
-        company = company_q.filter(Company.shortName.like('%' + q + '%') ).all()
+        company = company_q.filter(Company.shortName.like('%' + q + '%')).filter(Company.is_active == True).all()
         
         companies = []
         
