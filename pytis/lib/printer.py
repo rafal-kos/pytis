@@ -215,6 +215,12 @@ class Printer(object):
         invoiceElement.appendChild(self._add_element(document, 'DETALICZNA', 'Nie'))
         invoiceElement.appendChild(self._add_element(document, 'TYP_PODMIOTU', 'kontrahent', True))
         invoiceElement.appendChild(self._add_element(document, 'PODMIOT', invoice.company.shortName, True))
+        invoiceElement.appendChild(self._add_element(document, 'NIP_KRAJ', invoice.company.nip_code, True))
+        invoiceElement.appendChild(self._add_element(document, 'NIP', invoice.company.nip, True))
+        invoiceElement.appendChild(self._add_element(document, 'NAZWA1', invoice.company.name, True))
+        invoiceElement.appendChild(self._add_element(document, 'ULICA', invoice.company.address, True))
+        invoiceElement.appendChild(self._add_element(document, 'MIASTO', invoice.company.city, True))
+        invoiceElement.appendChild(self._add_element(document, 'KOD_POCZTOWY', invoice.company.zip, True))
 
         if invoice.tax.name == 'NPO':
             if invoice.elements[0].currency.value == 'EUR':
