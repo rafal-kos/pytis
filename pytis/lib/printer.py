@@ -243,12 +243,11 @@ class Printer(object):
             if invoice.tax.name == 'NPO':
                 positionElement.appendChild(self._add_element(document, 'NETTO', str(position.netto_value)))
                 positionElement.appendChild(self._add_element(document, 'VAT', str(position.tax_value)))
-                positionElement.appendChild(self._add_element(document, 'NETTO_SYS', str(position.netto_value)))
-                positionElement.appendChild(self._add_element(document, 'VAT_SYS', str(position.tax_value)))
+                positionElement.appendChild(self._add_element(document, 'NETTO_SYS', str(position.netto_value * Decimal(repr((invoice.currencyValue or 1))))))
+                positionElement.appendChild(self._add_element(document, 'VAT_SYS', str(0)))
                 #positionElement.appendChild(self._add_element(document, 'NETTO_SYS2', str(position.netto_value)))
                 positionElement.appendChild(self._add_element(document, 'NETTO_SYS2', str(position.netto_value * Decimal(repr((invoice.currencyValue or 1))))))
-                #positionElement.appendChild(self._add_element(document, 'VAT_SYS2', str(position.tax_value)))
-                positionElement.appendChild(self._add_element(document, 'VAT_SYS2', str(position.tax_value * Decimal(repr((invoice.currencyValue or 1))))))
+                positionElement.appendChild(self._add_element(document, 'VAT_SYS2', str(0)))
             else:
                 positionElement.appendChild(self._add_element(document, 'NETTO', str(position.netto_value)))
                 positionElement.appendChild(self._add_element(document, 'VAT', str(position.tax_value)))
