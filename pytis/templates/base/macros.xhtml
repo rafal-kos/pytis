@@ -205,19 +205,17 @@
 	</div>
 	
 <script type="text/javascript">
-	$("#companyOrderField").autocomplete(
-			"/orders/get_companies", {
-		        delay:10,
-		        minChars:2,
-		        matchSubset:1,
-		        matchContains:1,
-		        cacheLength:10,
-		        formatItem: function(item) {
-	                return item[0];
-	            },
-		        autoFill:true
-		}).result(function(event, data, formatted) {
-			$("#idCompanyOrder").val(data[1]);		
+	$("#companyOrderField").autocomplete({
+            source: "/orders/get_companies",
+            delay:10,
+            minLength: 2,
+            formatItem: function(item) {
+                return item[0];
+            },
+            autoFill:true,
+            select: function(event, ui) {
+                $("#idCompanyOrder").val(ui.item.id);
+            }
 		});
 </script>
 {%- endmacro %}
@@ -293,22 +291,26 @@
 
 
 <script type="text/javascript">
-	$("#place").autocomplete(
-        "/orders/get_company_places", {
-            delay:10,
-            minChars:1,
-            matchSubset:1,
-            max: 40,
-            matchContains:1,	            	            
-            formatItem: function(item) {
-                return item[0];
-            },
-            autoFill:true,
-            extraParams: {
-                id_company: function() { return  $("#idCompany").val(); }
-			}
-	}).result(function(event, data, formatted) {
-		$("#idPlace").val(data[1]);		
+	$("#place").autocomplete({
+        source: function(request, response) {
+            $.ajax({
+                url: "/orders/get_company_places",
+                dataType: "json",
+                data: {
+                    term: request.term,
+                    id_company: $("#idCompany").val()
+                },
+                success: function(data) {
+                    response(data);
+                }
+            })
+        },
+        max: 40,
+        matchContains:1,
+        autoFill:true,
+        select: function(event, ui) {
+            $("#idPlace").val(ui.item.id);
+        }
 	});
 </script>
 {%- endmacro %}

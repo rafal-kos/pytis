@@ -63,22 +63,16 @@
 
 <script type="text/javascript">	
 $(document).ready(function() {	
-	$("#companyField").autocomplete(
-		"/orders/get_companies",
-		{
-			delay:10,
-			minChars:2,
-			matchSubset:1,
-			matchContains:1,
-			cacheLength:10,					
-			autoFill:true,
-			formatItem: function(item) {
-                return item[0];
-            }
-		}
-	).result(function(event, data, formatted){
-		$("#idCompany").val(data[1]);
-	});	
+	$("#companyField").autocomplete({
+        source: "/orders/get_companies",
+        delay: 10,
+        minLength: 2,
+        cacheLength: 10,
+        autoFill: true,
+        select: function(event, ui) {
+            $("#idCompany").val(ui.item.id);
+        }
+    });
 });
 
 </script>

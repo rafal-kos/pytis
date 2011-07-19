@@ -1,0 +1,12 @@
+Pylons==1.0
+webhelpers==1.1
+SQLAlchemy==0.6.7
+reportlab
+wtforms
+jinja2
+authkit
+pisa
+html5lib
+mysql-python
+pyofc2
+xlwt

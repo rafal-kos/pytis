@@ -510,20 +510,13 @@
             $dialog.dialog('open');
         });
 		
-		$("#companyField").autocomplete(
-			"/orders/get_companies", {
-		        delay:10,
-		        minChars:2,
-		        matchSubset:1,
-		        matchContains:1,
-		        cacheLength:20,
-		        formatItem: function(item) {
-	                return item[0];
-	            },
-		        autoFill:true
-		}).result(function(event, data, formatted) {
-			$("#idCompany").val(data[1]);		
-		});					    
+		$("#companyField").autocomplete({
+            source: "/orders/get_companies",
+            minLength: 2,
+            select: function(event, ui) {
+                $("#idCompany").val(ui.item.id);
+            }
+		});
     });		
 </script>
 

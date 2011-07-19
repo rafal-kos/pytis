@@ -19,7 +19,8 @@ import logging
 import pytis.lib.helpers as h
 import webhelpers.paginate as paginate
 from pytis.controllers.companies import PlaceForm
-from pytis.model.form import OrderForm, OrderPlaceForm, TransportOrderForm, DelegationForm       
+from pytis.model.form import OrderForm, OrderPlaceForm, TransportOrderForm, DelegationForm
+import json
 
 log = logging.getLogger(__name__)
 
@@ -258,7 +259,7 @@ class OrdersController(BaseController):
                             
     
     def get_companies(self):
-        q = request.params.get('q', '')
+        q = request.params.get('term', '')
         
         company_q = meta.Session.query(Company.id, Company.shortName, Company.name)
         company = company_q.filter(Company.shortName.like('%' + q + '%')).filter(Company.is_active == True).all()
@@ -266,12 +267,12 @@ class OrdersController(BaseController):
         companies = []
         
         for c in company:
-            companies.append(c.shortName.encode('utf-8') + '|' + str(c.id) + '\n')                
+            companies.append({'id' : c.id, 'value' : c.shortName})
         
-        return companies
+        return json.dumps(companies)
 
     def get_company_places(self):
-        q = request.params.get('q', '')
+        q = request.params.get('term', '')
         id_company = request.params.get('id_company', '')
 
         place_q = meta.Session.query(Place.id, Place.name, Place.city, Place.country_code)
@@ -279,9 +280,12 @@ class OrdersController(BaseController):
 
         places = []
         for p in place:
-            places.append(p.country_code.encode('utf-8').upper() + ' ' + p.city.encode('utf-8') + ' ' + p.name.encode('utf-8') + '|' + str(p.id) + '\n')
+            places.append({
+                'id' : p.id,
+                'value' : p.country_code.upper() + ' ' + p.city + ' ' + p.name
+                })
 
-        return places
+        return json.dumps(places)
     
     @h.auth.authorize(h.auth.is_admin)
     def year_balance(self, id):               
