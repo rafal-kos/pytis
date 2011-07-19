@@ -20,7 +20,7 @@ import pytis.lib.helpers as h
 import webhelpers.paginate as paginate
 from pytis.controllers.companies import PlaceForm
 from pytis.model.form import OrderForm, OrderPlaceForm, TransportOrderForm, DelegationForm
-import json
+import simplejson as json
 
 log = logging.getLogger(__name__)
 
