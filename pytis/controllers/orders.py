@@ -4,7 +4,6 @@ from pylons import app_globals, request, response, session, tmpl_context as c, \
     url
 from pylons.controllers.util import abort
 from pyofc2.ofc2 import open_flash_chart, title, bar, labels, y_axis, x_axis
-from pytis.lib.app_globals import Globals
 from pytis.lib.base import BaseController, render, render_macro
 from pytis.lib.helpers import flash
 from pytis.model import meta
@@ -31,13 +30,7 @@ class OrdersController(BaseController):
         pass
         
     def list(self):        
-        #from sqlalchemy.sql import select
-        #from sqlalchemy.sql.expression import alias, and_
-        #o = Order.__table__.alias('o')
-        #s = select([o], and_(o.c.id == 1))
-        #meta.Session.execute(s)
-        #raise Exception(s)
-        c.user = meta.Session.query(User.id, User.last_name + u' ' + User.first_name).all()            
+        c.user = meta.Session.query(User.id, User.last_name + u' ' + User.first_name).all()
         
         company_name = request.params.get('company_name', '')
         number = request.params.get('number', '')
