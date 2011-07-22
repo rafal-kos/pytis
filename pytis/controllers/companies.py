@@ -40,7 +40,7 @@ class CompaniesController(BaseController):
             
     def add(self):
         c.form = CompanyForm(request.POST, prefix='company')
-        
+
         if request.method == 'POST' and c.form.validate():
             company = Company()
             c.form.populate_obj(company)
@@ -55,9 +55,15 @@ class CompaniesController(BaseController):
         c.company = Company.query.get_or_abort(id)               
         c.form = EditCompanyForm(request.POST, obj=c.company, prefix='company')
         c.place_form = PlaceForm(request.POST, prefix='place', idCompany=c.company.id)
-        
+
         if request.method == 'POST' and 'action' in request.POST:
-            if request.POST['action'] == 'company' and c.form.validate():
+
+            #raise Exception(c.company)
+
+            def test(value, name):
+                raise Exception('name')
+
+            if request.POST['action'] == 'company' and c.form.validate(c.company):
                 c.form.populate_obj(c.company)
                 c.company.save()
                 

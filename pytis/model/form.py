@@ -3,6 +3,7 @@
 from pytis.lib.validators import PytisForm, is_selected, CountrySelect, PytisQuerySelectField
 from pytis.model.dictionary import Dictionary, Tax, Country
 from pytis.model.document import Document
+from pytis.model.invoice import Invoice
 from pytis.model.driver import Driver, Truck, Semitrailer
 from pytis.model.company import Company, NipExistsException
 from pytis.model.user import User, Group, UserDoesntExistsException
@@ -96,7 +97,7 @@ class CompanyForm(PytisForm):
         try:
             company.nip_exists()
         except NipExistsException:
-            raise ValidationError(u'Podany NIP już istnieje w bazie')
+            raise ValdationError(u'Podany NIP już istnieje w bazie')
 
     def validate_name(form, field):
         """Strip whitespaces from name"""
@@ -111,6 +112,17 @@ class EditCompanyForm(CompanyForm):
     def validate_nip(form, field):
         if '-' in form.nip.data:
             raise ValidationError(u'NIP może zawierać tylko cyfry lub litery')
+
+    def validate(self, object=None):
+        """don't allow to change name and acronym of company"""
+
+        if object and (object.name != self.data['name'] or object.shortName != self.data['shortName']):
+            if Invoice.query.filter(Invoice.idCompany==object.id).count() > 0:
+                self.name.process_errors.append(
+                    u'Nie można zmieniać nazwy oraz akronimu kontrahenta jeśli zostały już na niego wystawione faktury'
+                )
+
+        super(EditCompanyForm, self).validate()
 
 class PlaceForm(PytisForm):
     id = HiddenField()
