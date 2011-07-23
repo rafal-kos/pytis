@@ -1,6 +1,7 @@
 ## -*- coding: utf-8 -*-
 
 from meta import Base, db
+from pytis.lib.database.mappers import HistoryMapper
 from pytis.model import meta
 from pytis.model.dictionary import Dictionary, Tax, Country
 from sqlalchemy import types, orm
@@ -40,7 +41,7 @@ class Place(Base):
             raise sa.exc.SQLAlchemyError
 
 class Company(Base):
-    __tablename__ = 'company'   
+    __tablename__ = 'company'      
 
     query = db.query_property(db.Query)
 

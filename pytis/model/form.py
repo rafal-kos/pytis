@@ -122,7 +122,7 @@ class EditCompanyForm(CompanyForm):
                     u'Nie można zmieniać nazwy oraz akronimu kontrahenta jeśli zostały już na niego wystawione faktury'
                 )
 
-        super(EditCompanyForm, self).validate()
+        return super(EditCompanyForm, self).validate()
 
 class PlaceForm(PytisForm):
     id = HiddenField()

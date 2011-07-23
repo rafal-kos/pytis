@@ -57,12 +57,7 @@ class CompaniesController(BaseController):
         c.place_form = PlaceForm(request.POST, prefix='place', idCompany=c.company.id)
 
         if request.method == 'POST' and 'action' in request.POST:
-
-            #raise Exception(c.company)
-
-            def test(value, name):
-                raise Exception('name')
-
+            
             if request.POST['action'] == 'company' and c.form.validate(c.company):
                 c.form.populate_obj(c.company)
                 c.company.save()

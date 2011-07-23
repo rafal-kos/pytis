@@ -12,15 +12,6 @@ from pylons.controllers.util import abort
 class AbstractBase(object):    
     pass
 
-class MyMeta(DeclarativeMeta):
-    def __init__(cls, classname, bases, dict_):        
-        setattr(cls, 'content_type', cls.__name__.lower())
-        if hasattr(cls, '__log_changes__'):
-            if getattr(cls, '__log_changes__') == True:                
-                setattr(cls, '__mapper_args__', {'extension': ChangeLogger()})
-                
-        DeclarativeMeta.__init__(cls, classname, bases, dict_)       
-
 class Query(orm.Query):
     """Default query class."""
 
