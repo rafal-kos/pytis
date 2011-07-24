@@ -18,7 +18,15 @@
 			
 		$(function() {
 			$("#country-list").msDropDown();
-			$("#tabs").tabs();			
+			$("#tabs").tabs({
+                ajaxOptions: {
+                    error: function( xhr, status, index, anchor ) {
+                        $( anchor.hash ).html(
+                            "Wystąpił problem podczas ładowania strony."
+                        );
+                    }
+			    }
+            });
 		});
     </script>
 {% endblock %}
@@ -31,6 +39,7 @@
         <li><a href="#tabs-1">Kontrahent</a></li>
         <li><a href="#tabs-2">Magazyny</a></li>
 		<li><a href="#tabs-3">Obrót roczny</a></li>
+        <li><a href="{{ url(controller='histories', action='view', id=request.urlvars['id'], object='company') }}">Historia zmian</a></li>
     </ul>
 
     <!-- KONTRAHENT -->
@@ -257,6 +266,7 @@
 	<div id="tabs-3">
 		<div class="chart" id="balance_chart"></div>		
 	</div>
+
 </div>
 </div>
 

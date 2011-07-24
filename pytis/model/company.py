@@ -41,7 +41,8 @@ class Place(Base):
             raise sa.exc.SQLAlchemyError
 
 class Company(Base):
-    __tablename__ = 'company'      
+    __tablename__ = 'company'
+    __mapper_args__ = {'extension': HistoryMapper()}
 
     query = db.query_property(db.Query)
 

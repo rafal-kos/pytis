@@ -13,7 +13,7 @@ from sqlalchemy.schema import Column
 import datetime
 import pytis.lib.helpers as h
 import sqlalchemy as sa
-from pytis.lib.database.mappers import DocumentMapper
+from pytis.lib.database.mappers import DocumentMapper, HistoryMapper
 from pytis.model.driver import Driver, Truck, Semitrailer
 
 from sqlalchemy.ext.declarative import synonym_for
@@ -152,7 +152,7 @@ class OrderQuery(db.Query):
 class Order(Base):    
     """Zlecenie transportowe"""
     __tablename__ = 'order'
-    __mapper_args__ = {'extension': DocumentMapper()}
+    __mapper_args__ = {'extension': [DocumentMapper(), HistoryMapper()]}
     
     query = db.query_property(OrderQuery)          
     

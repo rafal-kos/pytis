@@ -18,7 +18,7 @@ import pytis.lib.helpers as h
 import sqlalchemy as sa
 from decimal import Decimal
 from pylons import app_globals
-from pytis.lib.database.mappers import DocumentMapper
+from pytis.lib.database.mappers import DocumentMapper, HistoryMapper
 
 YES = 1
 NO = 0
@@ -82,7 +82,7 @@ class InvoicePosition(Base):
 
 class Invoice(Base, ActionObject):
     __tablename__ = 'invoice'
-    __mapper_args__ = {'extension': DocumentMapper()}
+    __mapper_args__ = {'extension': [DocumentMapper(), HistoryMapper()]}
     
     query = db.query_property(db.Query)
 

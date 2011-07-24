@@ -25,6 +25,7 @@
         <li><a href="#tabs-1">Zlecenie</a></li>
         <li><a href="#tabs-2">Miejsca załadunku</a></li>        
         <li><a href="#tabs-3">Dodatkowe informacje</a></li>
+        <li><a href="{{ url(controller='histories', action='view', id=request.urlvars['id'], object='order') }}">Historia zmian</a></li>
     </ul>
 	{{ h.form(url(controller='orders', action='edit', id=request.urlvars['id']), method="post", id='order-form') }}
     <div id="tabs-1">
@@ -247,7 +248,15 @@
 			}).focus();
 		})            		
 		
-        var $tabs = $("#tabs").tabs();
+        var $tabs = $("#tabs").tabs({
+            ajaxOptions: {
+                error: function( xhr, status, index, anchor ) {
+                    $( anchor.hash ).html(
+                        "Wystąpił problem podczas ładowania strony."
+                    );
+                }
+            }
+        });
 		//$("select").msDropDown();    
 		
 		$('#driver-select').live('change', function(){

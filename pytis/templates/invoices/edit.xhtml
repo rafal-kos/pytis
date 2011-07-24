@@ -15,6 +15,7 @@
             <li><a href="#tabs-1">Faktura</a></li>
             <li><a href="#tabs-3">Kursy walut</a></li>
             <li><a href="#tabs-2">Dodatkowe informacje</a></li>
+            <li><a href="{{ url(controller='histories', action='view', id=request.urlvars['id'], object='invoice') }}">Historia zmian</a></li>
 		</ul>
 
         <div id="tabs-1">
@@ -187,7 +188,15 @@
 	    $('#sellDate').datepicker({
 	        dateFormat: 'yy-mm-dd'
 	    });
-	    $("#tabs").tabs();		
+	    $("#tabs").tabs({
+            ajaxOptions: {
+                error: function( xhr, status, index, anchor ) {
+                    $( anchor.hash ).html(
+                        "Wystąpił problem podczas ładowania strony."
+                    );
+                }
+            }
+        });
 	  });
 	</script>
 {% endblock %}

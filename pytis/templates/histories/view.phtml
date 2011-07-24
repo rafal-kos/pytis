@@ -1,0 +1,20 @@
+{% if c.history|length %}
+    <table>
+        <thead>
+            <tr>
+                <th>Kto</th>
+                <th>Co</th>
+                <th>Kiedy</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in c.history %}
+                <tr>
+                    <td>{{ item.user.full_name }}</td>
+                    <td>{{ item.text|replace("\n", "<br />") }}</td>
+                    <td>{{ item.created_at }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
