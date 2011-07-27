@@ -154,7 +154,7 @@ class UserRegisterForm(UserForm):
             raise ValidationError(u'Hasła muszą się zgadzać')
 
 class UserEditForm(UserForm):
-    groups = QuerySelectMultipleField(query_factory=get_groups, pk_attr='id', label_attr='name')
+    groups = QuerySelectMultipleField(query_factory=get_groups, get_label='name')
 
 class ChangePasswordForm(PytisForm):
     old_password = PasswordField(u'Stare hasło', [validators.required(message=u'Pole jest wymagane')])

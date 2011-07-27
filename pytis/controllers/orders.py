@@ -93,6 +93,7 @@ class OrdersController(BaseController):
         c.form = OrderForm(request.POST, obj=c.order, prefix='order')
         c.places_form = OrderPlaceForm(request.POST)             
         c.transport_form = TransportOrderForm(request.POST, obj=c.order.transport_order, prefix='transport-order')
+        
         c.place_form = PlaceForm(request.POST, idCompany=c.order.idCompany)
         if c.order.delegation is None:
             #c.drivers = [(driver.id, driver.full_name) for driver in Driver.query.filter(Driver.is_active == True).all()]

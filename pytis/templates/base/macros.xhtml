@@ -176,10 +176,21 @@
 				{{ render_field(form.tractorName, class_="vMediumTextField") }}            		                    
 	        </div>
 	    </div>
+        
 	    <div class="form-row">
 	        <div>
 	            {{ form.freight.label }}
-	    		{{ form.freight() }}					
+
+                {% if not form.id.data %}
+                    {{ form.freight() }}
+                {% else %}
+                    {% if 'administratorzy' in session['user']['groups'] %}
+	    		        {{ form.freight() }}
+                    {% else %}
+                        {{ form.freight(readonly=True) }}
+                    {% endif %}
+                {% endif %}
+                
 				{{ form.currency() }}
 				
 				{{ with_errors(form.freight) }}
@@ -198,7 +209,7 @@
 				{{ h.link_print('Drukuj', url(controller="orders", action="print_transport_order", id=order.id)) }}                
 	        {% endif %}
 			
-			{% if order.transport_order is not none %}
+			{% if order.transport_order is not none and 'administratorzy' in session['user']['groups'] %}
 				{{ h.link_delete('Usuń', "#", id='delete-transport-order') }}                    
 	        {% endif %}		
 		</div>		 
