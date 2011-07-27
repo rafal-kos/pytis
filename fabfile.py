@@ -7,9 +7,7 @@ env.user = 'dcsdebica'
 @hosts(PROD)
 def deploy():
     zipdir('pytis')
-    put('pytis.zip', '~/')
-    run('unzip -o pytis.zip -d /home/dcsdebica/www/pytis/')
-    run('unzip -o pytis.zip -d /home/dcsdebica/www/pytis_2/')
+    put('pytis.zip', '/home/dcsdebica/www/pytis/pytis.zip')
+    run('unzip -o /home/dcsdebica/www/pytis/pytis.zip -d /home/dcsdebica/www/pytis/')
     run('restart-app pytis_v1')
-    #run('restart-app pytis_v2')
-    run('rm pytis.zip')
+    run('rm /home/dcsdebica/www/pytis.zip')
