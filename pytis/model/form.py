@@ -116,10 +116,10 @@ class EditCompanyForm(CompanyForm):
     def validate(self, object=None):
         """don't allow to change name and acronym of company"""
 
-        if object and (object.name != self.data['name'] or object.shortName != self.data['shortName']):
+        if object and object.shortName != self.data['shortName']:
             if Invoice.query.filter(Invoice.idCompany==object.id).count() > 0:
                 self.name.process_errors.append(
-                    u'Nie można zmieniać nazwy oraz akronimu kontrahenta jeśli zostały już na niego wystawione faktury'
+                    u'Nie można zmieniać akronimu kontrahenta jeśli zostały już na niego wystawione faktury'
                 )
 
         return super(EditCompanyForm, self).validate()
