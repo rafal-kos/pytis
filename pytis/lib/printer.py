@@ -229,6 +229,8 @@ class Printer(object):
                 invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ZA_ILE', u'1', True))
                 invoiceElement.appendChild(self._add_element(document, 'KURS_WALUTY', u'NBP', True))
                 invoiceElement.appendChild(self._add_element(document, 'DATA_KURSU', str(invoice.currencyDate or ''), True))
+                invoiceElement.appendChild(self._add_element(document, 'DATA_KURSU_2', str(invoice.currencyDate or ''), True))
+                invoiceElement.appendChild(self._add_element(document, 'DATA_KURSU_PLAT', str(invoice.currencyDate or ''), True))
             invoiceElement.appendChild(self._add_element(document, 'KATEGORIA', u'EKSPORT USŁUG PRZEWO', True))
         else:
             invoiceElement.appendChild(self._add_element(document, 'NOTOWANIE_WALUTY_ILE', '1', True))
