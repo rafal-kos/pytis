@@ -64,7 +64,7 @@ li {
 		</tr>
 	</table>
 	
-	<p>Termin platnosci: {{ c.order.transport_order.company.paymentForm.value }} od daty wplyniecia faktury<p>
+	<p>Termin platnosci: {{ c.order.transport_order.company.paymentForm.value }} od daty wplyniecia faktury</p>
 	<p>Przy wystawianiu faktury prosimy powolac sie na nasz numer zlecenia: <b>{{ c.order.number }}</b></p>
 		
 	{% if c.order.transport_order.description %}
@@ -95,7 +95,9 @@ li {
 	<p style="width: 100%; border-top: 2px solid #ccc;">&nbsp;</p>
 	<p>ul. 1 Maja 1</p>
 	<p>39-200 Dębica</p>
-	
+
+    <h2 style="font-size: 16px;">UWAGA : ZMIANA NUMERU RACHUNKU BANKOWEGO</h2>
+
 	<div id="footerContent">
 
         <table>
@@ -125,7 +127,7 @@ li {
         </table>
 
         <hr style="width: 100%;" />
-		<p style="width: 100%; text-align: center; font-size: 10px;"><b>KONTO PLN BANK: PBS o/DEBICA nr: 30 8642 1139 2013 3914 7268 0001</b></p>
-		<p style="width: 100%; text-align: center; font-size: 10px;"><b>KONTO EUR BANK: PBS o/DEBICA nr: 03 8642 1139 2013 3914 7268 0002 KOD SWIFT: POLUPLPR</b></p>
+		<p style="width: 100%; text-align: center; font-size: 10px;"><b>KONTO PLN BANK: BGŻ SA o/Ropczyce nr: 12 2030 0045 1110 0000 0218 7530</b></p>
+		<p style="width: 100%; text-align: center; font-size: 10px;"><b>KONTO EUR BANK: BGŻ SA o/Ropczyce nr: 59 2030 0045 3110 0000 0019 8870 KOD SWIFT: GOPZPLPW</b></p>
     </div>
 {%- endmacro %}

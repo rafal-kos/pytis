@@ -75,7 +75,10 @@ class CompanyForm(PytisForm):
         ('HU', 'HU'),
         ('ES', 'ES'),
         ('BA', 'BA'),
-        ('YU', 'YU')
+        ('YU', 'YU'),
+        ('DK', 'DK'),
+        ('NO', 'NO'),
+        ('LT', 'LT')
     ])
     address = TextField('Adres', [validators.required(message=u'Pole jest wymagane')])
     zip = TextField('Kod', [validators.required(message=u'Pole jest wymagane')])
